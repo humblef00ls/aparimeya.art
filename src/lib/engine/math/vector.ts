@@ -39,55 +39,14 @@ export class Vector3 {
     return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
   }
 
-  lengthSquared(): number {
-    return this.x * this.x + this.y * this.y + this.z * this.z;
-  }
-
   normalize(): Vector3 {
     const len = this.length();
     if (len === 0) return new Vector3();
     return this.div(len);
   }
 
-  // Utility methods
-  clone(): Vector3 {
-    return new Vector3(this.x, this.y, this.z);
-  }
-
-  toString(): string {
-    return `Vector3(${this.x}, ${this.y}, ${this.z})`;
-  }
-
   // Static factory methods
-  static zero(): Vector3 {
-    return new Vector3(0, 0, 0);
-  }
-
-  static one(): Vector3 {
-    return new Vector3(1, 1, 1);
-  }
-
   static up(): Vector3 {
     return new Vector3(0, 1, 0);
-  }
-
-  static down(): Vector3 {
-    return new Vector3(0, -1, 0);
-  }
-
-  static left(): Vector3 {
-    return new Vector3(-1, 0, 0);
-  }
-
-  static right(): Vector3 {
-    return new Vector3(1, 0, 0);
-  }
-
-  static forward(): Vector3 {
-    return new Vector3(0, 0, 1);
-  }
-
-  static backward(): Vector3 {
-    return new Vector3(0, 0, -1);
   }
 }

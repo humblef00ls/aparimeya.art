@@ -17,17 +17,4 @@ export class PerspectiveCamera extends Camera {
     this.updateMatrices();
     return this.viewMatrix;
   }
-
-  // Create a default perspective camera
-  static createDefault(): PerspectiveCamera {
-    return new PerspectiveCamera({
-      position: new Vector3(0, 0, -5),
-      target: new Vector3(0, 0, 0),
-      up: Vector3.up(),
-      fov: Math.PI / 4, // 45 degrees
-      aspect: 16 / 9,
-      near: 0.1,
-      far: 1000
-    });
-  }
 }

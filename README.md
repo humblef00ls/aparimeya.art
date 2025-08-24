@@ -10,10 +10,23 @@ An experimental ray tracer built with WebGPU, exploring real-time rendering tech
 
 ## Controls
 
+### Movement
+
 - **W/A/S/D** - Move forward/left/backward/right
 - **Q/E** - Move down/up
+- **Shift + W/A/S/D/Q/E** - Amplified movement (3x speed)
+
+### Camera Rotation
+
 - **Mouse drag** - Pan camera view
-- **R** - Reset camera position
+- **Arrow Keys** - Rotate camera (pitch/yaw)
+  - **↑/↓** - Pitch (look up/down)
+  - **←/→** - Yaw (look left/right)
+- **Shift + Arrow Keys** - Amplified rotation (3x speed)
+
+### Camera Reset
+
+- **R** - Reset camera rotation
 
 ## Getting Started
 

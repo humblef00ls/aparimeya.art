@@ -246,34 +246,62 @@
   function updateCamera() {
     if (!camera) return;
 
-    const moveSpeed = 0.1;
-    const rotateSpeed = 0.001;
+    const moveSpeed = 0.05; // Reduced from 0.1 for less sensitive movement
+    const rotateSpeed = 0.005; // Increased from 0.001 for more sensitive rotation
+    const shiftMultiplier = 4; // Increased from 3 for stronger shift effect
+
+    // Check if Shift is held
+    const isShiftHeld = keys.has("shift");
 
     // Handle keyboard movement
     if (keys.has("w")) {
       const forward = camera.getForward();
-      camera.moveTo(camera.getPosition().add(forward.mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().add(forward.mul(speed)));
     }
     if (keys.has("s")) {
       const forward = camera.getForward();
-      camera.moveTo(camera.getPosition().sub(forward.mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().sub(forward.mul(speed)));
     }
     if (keys.has("a")) {
       const right = camera.getRight();
-      camera.moveTo(camera.getPosition().sub(right.mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().sub(right.mul(speed)));
     }
     if (keys.has("d")) {
       const right = camera.getRight();
-      camera.moveTo(camera.getPosition().add(right.mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().add(right.mul(speed)));
     }
     if (keys.has("q")) {
-      camera.moveTo(camera.getPosition().add(Vector3.up().mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().add(Vector3.up().mul(speed)));
     }
     if (keys.has("e")) {
-      camera.moveTo(camera.getPosition().sub(Vector3.up().mul(moveSpeed)));
+      const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
+      camera.moveTo(camera.getPosition().sub(Vector3.up().mul(speed)));
     }
     if (keys.has("r")) {
       camera.resetRotation();
+    }
+
+    // Handle arrow key rotation
+    if (keys.has("arrowup")) {
+      const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
+      camera.rotateX(-speed);
+    }
+    if (keys.has("arrowdown")) {
+      const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
+      camera.rotateX(speed);
+    }
+    if (keys.has("arrowleft")) {
+      const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
+      camera.rotateY(speed);
+    }
+    if (keys.has("arrowright")) {
+      const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
+      camera.rotateY(-speed);
     }
 
     // Update reactive variables for real-time display
@@ -286,16 +314,16 @@
 
     // Handle mouse rotation
     if (isMouseDown && (mouseX !== 0 || mouseY !== 0)) {
-      camera.rotateY(mouseX * rotateSpeed);
-      camera.rotateX(-mouseY * rotateSpeed);
-
-      // Update reactive rotation variables for real-time display
-      currentPitch = camera.getPitch();
-      currentYaw = camera.getYaw();
+      camera.rotateY(mouseX * rotateSpeed * 0.5); // Reduced mouse sensitivity
+      camera.rotateX(-mouseY * rotateSpeed * 0.5); // Reduced mouse sensitivity
 
       mouseX = 0;
       mouseY = 0;
     }
+
+    // Always update rotation display variables (for both mouse and arrow key changes)
+    currentPitch = camera.getPitch();
+    currentYaw = camera.getYaw();
   }
 
   function setupInputHandlers() {
