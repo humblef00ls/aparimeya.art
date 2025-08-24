@@ -1,0 +1,29 @@
+{
+	"name": "aparimeya.art",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-cloudflare": "^7.2.2",
+		"@sveltejs/kit": "^2.0.0",
+		"@sveltejs/vite-plugin-svelte": "^3.0.0",
+		"@types/three": "^0.173.0",
+		"prettier": "^3.3.3",
+		"prettier-plugin-svelte": "^3.2.6",
+		"svelte": "^4.2.7",
+		"svelte-check": "^3.6.0",
+		"typescript": "^5.0.0",
+		"vite": "^5.0.3"
+	},
+	"type": "module",
+	"dependencies": {
+		"three": "^0.173.0"
+	}
+}

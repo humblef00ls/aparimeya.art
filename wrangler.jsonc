@@ -1,0 +1,13 @@
+{
+  "name": "aparimeya-art",
+  "compatibility_date": "2025-08-23",
+  "main": ".svelte-kit/cloudflare/_worker.js",
+  "assets": {
+    "directory": ".svelte-kit/cloudflare",
+    "binding": "ASSETS"
+  },
+  "vars": {
+    "NODE_ENV": "production"
+  },
+  "compatibility_flags": ["nodejs_compat"]
+}
