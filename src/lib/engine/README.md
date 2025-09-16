@@ -108,9 +108,10 @@ raytracer.render();
 
 ### Adding New Objects
 
-1. Add intersection test functions in the compute shader
+1. Add intersection test functions in the compute shader (e.g., `hit_plane`, `hit_box`)
 2. Update the `trace_ray` function to include new objects
 3. Consider using GPU buffers for dynamic scene data
+4. Current objects: 5 spheres with different materials, 1 floor plane
 
 ### Adding Materials
 
@@ -134,6 +135,11 @@ raytracer.render();
 - ✅ Shift modifier for amplified movement
 - ✅ Perspective camera with FOV and aspect ratio control
 - ✅ Performance monitoring and debugging UI
+- ✅ Multiple scene objects (5 spheres with different materials)
+- ✅ Floor plane with realistic lighting
+- ✅ Gradient skybox background
+- ✅ Basic material system (albedo, metallic, roughness)
+- ✅ Simple directional lighting with ambient occlusion
 
 ## Future Enhancements
 

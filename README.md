@@ -2,7 +2,7 @@ Live at https://aparimeya-art.csgpxmv65k.workers.dev/
 
 # Experimental Ray Tracer
 
-An experimental ray tracer built with WebGPU, exploring real-time rendering techniques. Might make it a package / standalone thing that is helpful to get started with WebGPU but will definitely be using this for my personal website.
+An experimental ray tracer built with WebGPU, exploring real-time rendering techniques. Features multiple spheres with different materials, a floor plane, and a gradient skybox. Might make it a package / standalone thing that is helpful to get started with WebGPU but will definitely be using this for my personal website.
 
 <!-- Add screenshot here -->
 

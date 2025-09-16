@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -10,10 +11,10 @@ export const GET: RequestHandler = async ({ request }) => {
   const envInfo = {
     timestamp,
     userAgent,
-    environment: process.env.NODE_ENV || 'development',
-    platform: process.platform || 'unknown',
-    arch: process.arch || 'unknown',
-    nodeVersion: process.version || 'unknown',
+    environment: env.NODE_ENV || 'development',
+    platform: 'cloudflare-worker',
+    arch: 'wasm',
+    nodeVersion: 'cloudflare-worker',
     // Cloudflare Worker specific info
     cf: {
       rayId: request.headers.get('cf-ray') || 'unknown',

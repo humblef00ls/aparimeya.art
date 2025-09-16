@@ -8,8 +8,17 @@
   } from "$lib/engine";
 
   let canvas: HTMLCanvasElement;
+  let bufferViewerCanvas: HTMLCanvasElement;
   let raytracer: RayTracer;
   let camera: PerspectiveCamera;
+  let bufferViewerReady = false;
+  let bufferViewerPipeline: GPURenderPipeline;
+  let bufferViewerBindGroup: GPUBindGroup;
+  let previousFrameTexture: GPUTexture;
+  let previousFrameTextureView: GPUTextureView;
+  let currentFrameTexture: GPUTexture;
+  let currentFrameTextureView: GPUTextureView;
+  let frameBufferIndex = 0;
   let animationFrame: number;
   let cleanupInputHandlers: (() => void) | undefined;
   let cleanupResizeHandler: (() => void) | undefined;
@@ -27,6 +36,10 @@
   let currentAspect = 0;
   let currentPosition = { x: 0, y: 0, z: 0 };
   let memoryInfo = { used: 0, total: 0, available: 0 };
+
+  // Temporal accumulation
+  let temporalFrameCount = 0;
+  let cameraMoved = false;
 
   // Performance history for graphs - sample every 10 seconds
   let fpsHistory: number[] = Array(150).fill(0);
@@ -47,6 +60,10 @@
   let renderHeight = 0;
   let displayWidth = 0;
   let displayHeight = 0;
+
+  // Ray tracing settings
+  let maxBounces = 10; // Default max bounces (1-25 range)
+  let raysPerPixel = 20; // Default rays per pixel (1-16 range) - increased to reduce artifacts
 
   onMount(async () => {
     if (!navigator.gpu) {
@@ -77,7 +94,7 @@
 
     // Create camera with proper parameters
     camera = new PerspectiveCamera({
-      position: new Vector3(0, 0, -5),
+      position: new Vector3(0, 3, -8),
       target: new Vector3(0, 0, 0),
       up: Vector3.up(),
       fov: (fovDegrees * Math.PI) / 180, // Convert degrees to radians
@@ -98,6 +115,8 @@
       renderHeight,
       displayWidth,
       displayHeight,
+      maxBounces,
+      raysPerPixel,
     };
 
     // Create and use our ray tracer with camera data and render settings
@@ -105,6 +124,13 @@
 
     // Start render loop
     startRenderLoop();
+
+    // Setup buffer viewer canvas after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      console.log("Setting up buffer viewer...");
+      setupBufferViewer(device, format);
+      console.log("Buffer viewer setup complete");
+    }, 100);
 
     // Setup input handlers
     setupInputHandlers();
@@ -120,11 +146,23 @@
       const scaleSlider = document.getElementById(
         "scale-input",
       ) as HTMLInputElement;
+      const bouncesSlider = document.getElementById(
+        "bounces-input",
+      ) as HTMLInputElement;
+      const raysSlider = document.getElementById(
+        "rays-input",
+      ) as HTMLInputElement;
       if (fovSlider) {
         updateSliderProgress({ target: fovSlider } as unknown as Event);
       }
       if (scaleSlider) {
         updateSliderProgress({ target: scaleSlider } as unknown as Event);
+      }
+      if (bouncesSlider) {
+        updateSliderProgress({ target: bouncesSlider } as unknown as Event);
+      }
+      if (raysSlider) {
+        updateSliderProgress({ target: raysSlider } as unknown as Event);
       }
     }, 100);
   });
@@ -140,6 +178,219 @@
       cleanupResizeHandler();
     }
   });
+
+  function setupBufferViewer(device: GPUDevice, format: GPUTextureFormat) {
+    if (!bufferViewerCanvas) return;
+
+    const bufferContext = bufferViewerCanvas.getContext(
+      "webgpu",
+    ) as unknown as GPUCanvasContext;
+    bufferContext.configure({
+      device,
+      format,
+      alphaMode: "premultiplied",
+    });
+
+    // Set canvas size to match the display dimensions
+    bufferViewerCanvas.width = 200;
+    bufferViewerCanvas.height = 150;
+
+    // Create both frame textures for double buffering
+    previousFrameTexture = device.createTexture({
+      size: { width: 200, height: 150, depthOrArrayLayers: 1 },
+      format: "rgba8unorm",
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+    });
+    previousFrameTextureView = previousFrameTexture.createView();
+
+    currentFrameTexture = device.createTexture({
+      size: { width: 200, height: 150, depthOrArrayLayers: 1 },
+      format: "rgba8unorm",
+      usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+    });
+    currentFrameTextureView = currentFrameTexture.createView();
+
+    // Create a simple render pipeline for the buffer viewer
+    const shaderModule = device.createShaderModule({
+      label: "Buffer viewer shader",
+      code: `
+        @group(0) @binding(0) var inputTexture: texture_2d<f32>;
+        @group(0) @binding(1) var inputSampler: sampler;
+        @group(0) @binding(2) var previousFrameTexture: texture_2d<f32>;
+
+        @vertex
+        fn vertexMain(@builtin(vertex_index) vertexIndex: u32) -> @builtin(position) vec4f {
+          var pos = array<vec2f, 6>(
+            vec2f(-1, -1), vec2f(1, -1), vec2f(-1, 1),
+            vec2f(-1, 1), vec2f(1, -1), vec2f(1, 1)
+          );
+          return vec4f(pos[vertexIndex], 0, 1);
+        }
+
+        @fragment
+        fn fragmentMain(@builtin(position) position: vec4f) -> @location(0) vec4f {
+          let uv = vec2f(position.xy) / vec2f(200, 150);
+          
+          // Sample current frame (new render)
+          let currentFrame = textureSample(inputTexture, inputSampler, uv);
+          
+          // Sample previous frame (accumulated result)
+          let previousFrame = textureSample(previousFrameTexture, inputSampler, uv);
+          
+          // Blend: add 10% of current light to previous frame
+          // Only accumulate light, not darkness
+          let blendedColor = previousFrame.rgb;
+          
+          // For each color channel, only add light if current > previous
+          let r = select(previousFrame.r, previousFrame.r + 0.1 * currentFrame.r, currentFrame.r > previousFrame.r);
+          let g = select(previousFrame.g, previousFrame.g + 0.1 * currentFrame.g, currentFrame.g > previousFrame.g);
+          let b = select(previousFrame.b, previousFrame.b + 0.1 * currentFrame.b, currentFrame.b > previousFrame.b);
+          
+          return vec4f(r, g, b, 1.0);
+        }
+      `,
+    });
+
+    const bindGroupLayout = device.createBindGroupLayout({
+      entries: [
+        {
+          binding: 0,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: {},
+        },
+        {
+          binding: 1,
+          visibility: GPUShaderStage.FRAGMENT,
+          sampler: {},
+        },
+        {
+          binding: 2,
+          visibility: GPUShaderStage.FRAGMENT,
+          texture: {},
+        },
+      ],
+    });
+
+    const pipelineLayout = device.createPipelineLayout({
+      bindGroupLayouts: [bindGroupLayout],
+    });
+
+    bufferViewerPipeline = device.createRenderPipeline({
+      label: "Buffer viewer pipeline",
+      layout: pipelineLayout,
+      vertex: {
+        module: shaderModule,
+        entryPoint: "vertexMain",
+      },
+      fragment: {
+        module: shaderModule,
+        entryPoint: "fragmentMain",
+        targets: [
+          {
+            format: format,
+          },
+        ],
+      },
+      primitive: {
+        topology: "triangle-list",
+      },
+    });
+
+    // Create bind group
+    bufferViewerBindGroup = device.createBindGroup({
+      layout: bindGroupLayout,
+      entries: [
+        {
+          binding: 0,
+          resource: raytracer.getLastFrameBuffer().createView(),
+        },
+        {
+          binding: 1,
+          resource: device.createSampler({
+            magFilter: "linear",
+            minFilter: "linear",
+          }),
+        },
+        {
+          binding: 2,
+          resource: previousFrameTextureView,
+        },
+      ],
+    });
+
+    // Mark buffer viewer as ready
+    bufferViewerReady = true;
+  }
+
+  function renderBufferViewer() {
+    if (
+      !raytracer ||
+      !bufferViewerCanvas ||
+      !bufferViewerReady ||
+      !bufferViewerPipeline ||
+      !bufferViewerBindGroup
+    )
+      return;
+
+    // Get the lastFrameBuffer from the raytracer
+    const lastFrameBuffer = raytracer.getLastFrameBuffer();
+
+    // Update the bind group with the current frame buffer
+    const device = raytracer.getDevice();
+    const context = bufferViewerCanvas.getContext(
+      "webgpu",
+    ) as unknown as GPUCanvasContext;
+
+    // Create a new bind group with the current frame buffer and previous frame
+    const currentBindGroup = device.createBindGroup({
+      layout: bufferViewerPipeline.getBindGroupLayout(0),
+      entries: [
+        {
+          binding: 0,
+          resource: lastFrameBuffer.createView(),
+        },
+        {
+          binding: 1,
+          resource: device.createSampler({
+            magFilter: "linear",
+            minFilter: "linear",
+          }),
+        },
+        {
+          binding: 2,
+          resource:
+            frameBufferIndex === 0
+              ? previousFrameTextureView
+              : currentFrameTextureView,
+        },
+      ],
+    });
+
+    // Render using the pipeline
+    const commandEncoder = device.createCommandEncoder();
+
+    const renderPass = commandEncoder.beginRenderPass({
+      colorAttachments: [
+        {
+          view: context.getCurrentTexture().createView(),
+          clearValue: { r: 0, g: 0, b: 0, a: 1.0 },
+          loadOp: "clear",
+          storeOp: "store",
+        },
+      ],
+    });
+
+    renderPass.setPipeline(bufferViewerPipeline);
+    renderPass.setBindGroup(0, currentBindGroup);
+    renderPass.draw(6, 1, 0, 0);
+    renderPass.end();
+
+    // Submit the render command
+    device.queue.submit([commandEncoder.finish()]);
+
+    // Swap frame buffers for next frame
+    frameBufferIndex = 1 - frameBufferIndex;
+  }
 
   function startRenderLoop() {
     function render(currentTime: number) {
@@ -183,16 +434,30 @@
       }
 
       updateCamera();
-      raytracer.render();
+      raytracer.render(temporalFrameCount);
+      temporalFrameCount++; // Increment for temporal accumulation
+
+      // Render the debug buffer viewer
+      renderBufferViewer();
+
       animationFrame = requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+  }
+
+  function resetTemporalAccumulation() {
+    if (raytracer) {
+      raytracer.resetTemporalAccumulation();
+    }
+    // Reset the frame count in the scene component
+    temporalFrameCount = 0;
   }
 
   function updateFOV() {
     if (camera) {
       const fovRadians = (fovDegrees * Math.PI) / 180;
       camera.setFOV(fovRadians);
+      resetTemporalAccumulation();
     }
   }
 
@@ -213,9 +478,12 @@
       renderHeight,
       displayWidth,
       displayHeight,
+      maxBounces,
+      raysPerPixel,
     };
 
     raytracer.updateRenderSettings(renderSettings);
+    resetTemporalAccumulation();
   }
 
   function updateSliderProgress(event: Event) {
@@ -225,6 +493,36 @@
     const max = parseFloat(slider.max);
     const percentage = ((value - min) / (max - min)) * 100;
     slider.style.setProperty("--range-progress", percentage + "%");
+  }
+
+  function updateMaxBounces() {
+    if (raytracer) {
+      const renderSettings: RenderSettings = {
+        renderWidth,
+        renderHeight,
+        displayWidth,
+        displayHeight,
+        maxBounces,
+        raysPerPixel,
+      };
+      raytracer.updateRenderSettings(renderSettings);
+      resetTemporalAccumulation();
+    }
+  }
+
+  function updateRaysPerPixel() {
+    if (raytracer) {
+      const renderSettings: RenderSettings = {
+        renderWidth,
+        renderHeight,
+        displayWidth,
+        displayHeight,
+        maxBounces,
+        raysPerPixel,
+      };
+      raytracer.updateRenderSettings(renderSettings);
+      resetTemporalAccumulation();
+    }
   }
 
   function updatePerformanceHistory(
@@ -258,29 +556,35 @@
       const forward = camera.getForward();
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().add(forward.mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("s")) {
       const forward = camera.getForward();
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().sub(forward.mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("a")) {
       const right = camera.getRight();
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().sub(right.mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("d")) {
       const right = camera.getRight();
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().add(right.mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("q")) {
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().add(Vector3.up().mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("e")) {
       const speed = isShiftHeld ? moveSpeed * shiftMultiplier : moveSpeed;
       camera.moveTo(camera.getPosition().sub(Vector3.up().mul(speed)));
+      cameraMoved = true;
     }
     if (keys.has("r")) {
       camera.resetRotation();
@@ -290,18 +594,22 @@
     if (keys.has("arrowup")) {
       const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
       camera.rotateX(-speed);
+      cameraMoved = true;
     }
     if (keys.has("arrowdown")) {
       const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
       camera.rotateX(speed);
+      cameraMoved = true;
     }
     if (keys.has("arrowleft")) {
       const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
       camera.rotateY(speed);
+      cameraMoved = true;
     }
     if (keys.has("arrowright")) {
       const speed = isShiftHeld ? rotateSpeed * shiftMultiplier : rotateSpeed;
       camera.rotateY(-speed);
+      cameraMoved = true;
     }
 
     // Update reactive variables for real-time display
@@ -319,6 +627,13 @@
 
       mouseX = 0;
       mouseY = 0;
+      cameraMoved = true;
+    }
+
+    // Reset temporal accumulation if camera moved
+    if (cameraMoved) {
+      resetTemporalAccumulation();
+      cameraMoved = false;
     }
 
     // Always update rotation display variables (for both mouse and arrow key changes)
@@ -399,10 +714,13 @@
         renderHeight,
         displayWidth,
         displayHeight,
+        maxBounces,
+        raysPerPixel,
       };
 
       raytracer.updateRenderSettings(renderSettings);
       raytracer.updateCamera(camera);
+      resetTemporalAccumulation();
     };
 
     handleResize();
@@ -417,6 +735,13 @@
 <canvas
   bind:this={canvas}
   style="width: 100vw; height: 100vh; display: block; cursor: grab;"
+></canvas>
+
+<!-- Debug buffer viewer -->
+<canvas
+  bind:this={bufferViewerCanvas}
+  class="buffer-viewer"
+  style="width: 200px; height: 150px; display: block;"
 ></canvas>
 
 <div class="controls">
@@ -446,6 +771,32 @@
       on:input={updateSliderProgress}
     />
     <span class="value-display">{Math.round(renderScale * 100)}%</span>
+
+    <label for="bounces-input">Bounces</label>
+    <input
+      id="bounces-input"
+      type="range"
+      min="1"
+      max="25"
+      step="1"
+      bind:value={maxBounces}
+      on:input={updateSliderProgress}
+      on:input={updateMaxBounces}
+    />
+    <span class="value-display">{maxBounces}</span>
+
+    <label for="rays-input">Rays</label>
+    <input
+      id="rays-input"
+      type="range"
+      min="1"
+      max="16"
+      step="1"
+      bind:value={raysPerPixel}
+      on:input={updateSliderProgress}
+      on:input={updateRaysPerPixel}
+    />
+    <span class="value-display">{raysPerPixel}</span>
   </div>
 
   <div class="position-rotation-grid">
@@ -505,7 +856,7 @@
   .controls-grid {
     display: grid;
     grid-template-columns: auto 90px auto;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto auto auto auto;
     gap: 8px;
     align-items: center;
     margin-bottom: 12px;
@@ -666,5 +1017,15 @@
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     grid-column: 1 / -1;
+  }
+
+  .buffer-viewer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
   }
 </style>
