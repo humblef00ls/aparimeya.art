@@ -61,7 +61,8 @@ vec4 traceRay(vec2 uv) {
     float radius = length(position);
     if (radius < 1.015) { captured = true; break; }
     if (transmission < 0.025) break;
-    if (radius > 65.0) { escaped = true; break; }
+    // Distant observers must travel inward before a ray can escape.
+    if (radius > 65.0 && dot(position, velocity) > 0.0) { escaped = true; break; }
     float stepSize = clamp(radius * mix(0.035, 0.075, smoothstep(2.0, 6.0, radius)), 0.035, 1.4);
     pathLength += stepSize;
     vec3 nextPosition = position + velocity * stepSize + 0.5 * force * stepSize * stepSize;

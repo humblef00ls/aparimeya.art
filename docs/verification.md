@@ -22,3 +22,10 @@ Browser QA must use a real GPU-capable browser; a successful JavaScript build do
 The implementation was checked in the Codex inbuilt browser. Actual touch hardware, low-end mobile GPUs and other browsers require separate device testing; responsive viewport testing alone does not establish their performance.
 
 Additional appearance QA: set disk texture to zero and verify a smooth disk; change color; vary star size/density/variation; toggle the gravity well; switch between Original, ASCII and Dither; resize with an effect enabled; adjust effect size; verify Escape focus and panel exclusivity. The slider changes pixel dimensions only. Check that low resolutions produce crisp pixel blocks, not smooth interpolation, and that sampling remains 2–16. Check its minimum, midpoint and maximum, with stable camera framing. No cross-device frame-rate guarantee is implied.
+
+## Mobile defaults and orientation update
+
+- Verified the production build in the in-app browser at 532 × 852: violet-indigo disk, quarter-resolution pixels, and dither render correctly.
+- Verified the extended zoom limit still shows the disk and star field; inward rays from beyond the previous escape radius are no longer discarded.
+- Verified the motion-enable control and the browser's denied-permission message. Physical phone sensors were not available for end-to-end testing.
+- Automated orientation tests cover portrait/landscape calibration, bounded tilt, roll, orthonormal camera vectors, and disposal while permission is pending.

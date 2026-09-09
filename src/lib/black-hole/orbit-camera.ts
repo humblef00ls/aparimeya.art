@@ -1,10 +1,17 @@
 import { Vector3 } from "three";
 import {
+  clamp,
   constrainOrbit,
   VIEWS,
   type OrbitState,
   type ViewPreset,
 } from "./model.ts";
+
+export interface MotionPose {
+  yaw: number;
+  pitch: number;
+  roll: number;
+}
 
 /** Camera geometry only. Input and DOM lifetime belong to OrbitControls. */
 export class OrbitCamera {
@@ -14,6 +21,8 @@ export class OrbitCamera {
   readonly up = new Vector3();
   private state: OrbitState = { ...VIEWS.cinematic };
   private target: OrbitState = { ...VIEWS.cinematic };
+  private motion: MotionPose = { yaw: 0, pitch: 0, roll: 0 };
+  private motionTarget: MotionPose = { yaw: 0, pitch: 0, roll: 0 };
   private readonly worldUp = new Vector3(0, 1, 0);
 
   constructor() {
@@ -44,13 +53,30 @@ export class OrbitCamera {
     this.target = { ...view, azimuth: view.azimuth + offset * 2 * Math.PI };
   }
 
+  /** Sensor offsets never modify the orbit selected with touch or auto orbit. */
+  setMotion(pose: MotionPose) {
+    if (Object.values(pose).every(Number.isFinite))
+      this.motionTarget = { ...pose };
+  }
+
   update(delta: number, autoOrbit = false) {
     if (autoOrbit) this.target.azimuth += delta * 0.055;
     const blend = 1 - Math.exp(-delta * 12);
     for (const key of ["azimuth", "elevation", "distance"] as const) {
       this.state[key] += (this.target[key] - this.state[key]) * blend;
     }
-    const { distance, azimuth, elevation } = this.state;
+    for (const key of ["yaw", "pitch", "roll"] as const) {
+      const difference = this.motionTarget[key] - this.motion[key];
+      this.motion[key] +=
+        Math.atan2(Math.sin(difference), Math.cos(difference)) * blend;
+    }
+    const distance = this.state.distance;
+    const azimuth = this.state.azimuth + this.motion.yaw;
+    const elevation = clamp(
+      this.state.elevation + this.motion.pitch,
+      -1.45,
+      1.45,
+    );
     const horizontal = distance * Math.cos(elevation);
     this.position.set(
       horizontal * Math.sin(azimuth),
@@ -59,6 +85,8 @@ export class OrbitCamera {
     );
     this.forward.copy(this.position).negate().normalize();
     this.right.crossVectors(this.forward, this.worldUp).normalize();
+    this.up.crossVectors(this.right, this.forward).normalize();
+    this.right.applyAxisAngle(this.forward, -this.motion.roll);
     this.up.crossVectors(this.right, this.forward).normalize();
   }
 

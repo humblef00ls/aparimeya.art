@@ -1,4 +1,4 @@
-import { OrbitCamera } from "./orbit-camera";
+import { OrbitCamera, type MotionPose } from "./orbit-camera";
 import { OrbitControls } from "./orbit-controls";
 import { BlackHoleRenderer } from "./renderer";
 import type { SimulationSettings, ViewPreset } from "./model";
@@ -84,6 +84,10 @@ export class BlackHoleSimulation {
   update(settings: SimulationSettings) {
     this.settings = { ...settings };
     this.renderer.resize(this.width, this.height, this.settings);
+  }
+
+  setMotion(pose: MotionPose) {
+    this.camera.setMotion(pose);
   }
 
   setView(view: ViewPreset) {

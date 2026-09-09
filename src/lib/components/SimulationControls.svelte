@@ -1,6 +1,12 @@
 <script lang="ts">
   import RangeControl from "./RangeControl.svelte";
   import type { SimulationSettings, ViewPreset } from "$lib/black-hole/model";
+  import type { MotionStatus } from "$lib/black-hole/device-orientation";
+  export let motionStatus: MotionStatus;
+  export let motionSupported: boolean;
+  export let onMotionToggle: () => void;
+  export let onMotionRecenter: () => void;
+  $: motionEnabled = motionStatus === "active" || motionStatus === "waiting";
   export let settings: SimulationSettings;
   export let selectedView: ViewPreset | null;
   export let onView: (view: ViewPreset) => void;
@@ -130,6 +136,30 @@
         bind:checked={settings.autoOrbit}
       /></label
     >
+    {#if motionSupported}
+      <div class="actions">
+        <button
+          on:click={onMotionToggle}
+          disabled={motionStatus === "requesting"}
+          aria-pressed={motionEnabled}
+          >{motionEnabled
+            ? "Disable phone motion"
+            : "Enable phone motion"}</button
+        >
+        {#if motionEnabled}<button on:click={onMotionRecenter}
+            >Recenter tilt</button
+          >{/if}
+      </div>
+      <p role="status">
+        {motionStatus === "denied"
+          ? "Motion access was denied. Allow it in your browser's site settings to try again."
+          : motionStatus === "unavailable"
+            ? "No orientation data received. Your browser or device may not support motion input."
+            : motionStatus === "waiting"
+              ? "Move your phone gently to start."
+              : "Tilt for parallax; roll your phone to keep the scene level. Readings stay on your device."}
+      </p>
+    {/if}
     <RangeControl
       id="exposure"
       label="Exposure"

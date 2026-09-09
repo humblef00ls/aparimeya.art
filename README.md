@@ -14,7 +14,9 @@ The disk’s colors and turbulence are illustrative, not a plasma simulation. Th
 
 Drag to orbit; scroll or pinch to zoom. The three bottom icons open performance measurements, final effects, and appearance settings. With the canvas focused, arrow keys orbit, `+`/`-` zoom, `R` resets, and Space pauses animation.
 
-**Resolution changes pixel dimensions only.** It defaults to 1× CSS resolution; lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 20%; set it to zero for a smooth disk.
+**Resolution changes pixel dimensions only.** It defaults to 0.25× CSS resolution with dither; lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 20%; set it to zero for a smooth disk.
+
+The default scene uses a violet-indigo disk, a fuller star field, and slow auto orbit. Zoom extends to 110 Schwarzschild radii. In **Camera & rendering**, enable phone motion to add tilt parallax and roll compensation; recenter in your comfortable holding position. iOS asks for permission. Sensor readings stay on-device; this is orientation-driven depth, not positional tracking.
 
 ## Develop
 
@@ -37,6 +39,7 @@ npm run preview
 - `src/lib/components/`: page lifecycle and controls. Settings go into the simulation; performance measurements come back at a low frequency.
 - `src/lib/black-hole/simulation.ts`: animation, resizing, visibility, and cleanup.
 - `orbit-camera.ts` and `orbit-controls.ts`: camera geometry and input handling, kept separate so geometry can be tested without a browser.
+- `device-orientation.ts`: sensor permission, calibration, and screen-relative camera offsets.
 - `renderer.ts` and `shaders/`: GPU resources and render passes. The renderer owns their allocation and disposal.
 - `model.ts`: defaults, camera presets, units, and resolution bounds.
 

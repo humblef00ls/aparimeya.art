@@ -14,7 +14,7 @@ test("extreme zoom and orbit input cannot enter the disk or reach a camera pole"
   const near = constrainOrbit({ azimuth: 200, elevation: 10, distance: 0 });
   const far = constrainOrbit({ azimuth: -200, elevation: -10, distance: 1e6 });
   assert.ok(near.distance > DISK_OUTER_RADIUS);
-  assert.ok(far.distance <= 55);
+  assert.ok(far.distance === 110);
   assert.ok(near.elevation < Math.PI / 2);
   assert.ok(far.elevation > -Math.PI / 2);
   assert.equal(near.azimuth, 200);
@@ -25,8 +25,8 @@ test("every camera preset stays in the safe observation volume", () => {
     assert.deepEqual(constrainOrbit(view), view);
 });
 
-test("resolution controls only pixel dimensions, with a native default", () => {
-  assert.equal(DEFAULT_SETTINGS.resolution, 1);
+test("resolution controls only pixel dimensions, with a quarter-resolution default", () => {
+  assert.equal(DEFAULT_SETTINGS.resolution, 0.25);
   assert.deepEqual(renderSize(1280, 720, 1), { width: 1280, height: 720 });
   assert.deepEqual(renderSize(1280, 720, 0.25), { width: 320, height: 180 });
   assert.deepEqual(renderSize(1280, 720, 1.75), { width: 2240, height: 1260 });

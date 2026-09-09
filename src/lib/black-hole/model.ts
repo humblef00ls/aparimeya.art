@@ -36,17 +36,17 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   doppler: true,
   stars: true,
   paused: false,
-  autoOrbit: false,
-  resolution: 1,
-  diskColor: "#ffb46b",
+  autoOrbit: true,
+  resolution: 0.25,
+  diskColor: "#7952e8",
   diskTexture: 0.2,
   diskScale: 1,
   diskBrightness: 1,
-  starSize: 1.38,
-  starVariation: 0.805,
-  starDensity: 1.15,
+  starSize: 1.55,
+  starVariation: 0.9,
+  starDensity: 1.3,
   gravityGrid: false,
-  postEffect: "none",
+  postEffect: "dither",
   effectSize: 8,
 });
 
@@ -70,7 +70,7 @@ export function constrainOrbit(state: OrbitState): OrbitState {
   return {
     azimuth: state.azimuth,
     elevation: clamp(state.elevation, -1.45, 1.45),
-    distance: clamp(state.distance, 13, 55),
+    distance: clamp(state.distance, 13, 110),
   };
 }
 

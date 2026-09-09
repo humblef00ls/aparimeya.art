@@ -9,6 +9,14 @@
   import PerformanceStats from "./PerformanceStats.svelte";
   import SimulationControls from "./SimulationControls.svelte";
 
+  import type {
+    DeviceOrientationControls,
+    MotionStatus,
+  } from "$lib/black-hole/device-orientation";
+  let motion: DeviceOrientationControls | undefined;
+  let motionStatus: MotionStatus = "off";
+  let motionSupported = false;
+
   let canvas: HTMLCanvasElement;
   let simulation: BlackHoleSimulation | undefined;
   let settings = { ...DEFAULT_SETTINGS };
@@ -48,6 +56,17 @@
             selectedView = null;
           },
         );
+        const { DeviceOrientationControls } = await import(
+          "$lib/black-hole/device-orientation"
+        );
+        if (cancelled) return;
+        motion = new DeviceOrientationControls(
+          (pose) => simulation?.setMotion(pose),
+          (status) => {
+            motionStatus = status;
+          },
+        );
+        motionSupported = motion.supported;
       } catch (cause) {
         error =
           cause instanceof Error
@@ -58,6 +77,7 @@
     void start();
     return () => {
       cancelled = true;
+      motion?.dispose();
       simulation?.dispose();
     };
   });
@@ -150,7 +170,19 @@
   <div class="corner right">
     {#if openPanel === "controls"}
       <section id="controls-panel" class="panel" aria-label="Controls">
-        <SimulationControls bind:settings {selectedView} onView={setView} />
+        <SimulationControls
+          bind:settings
+          {selectedView}
+          onView={setView}
+          {motionStatus}
+          {motionSupported}
+          onMotionToggle={() => {
+            if (motionStatus === "active" || motionStatus === "waiting")
+              motion?.disable();
+            else void motion?.enable();
+          }}
+          onMotionRecenter={() => motion?.recenter()}
+        />
       </section>
     {/if}
     <button
