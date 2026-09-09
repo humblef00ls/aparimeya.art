@@ -1,23 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Scene } from "$lib";
-
+  import BlackHole from "$lib/components/BlackHole.svelte";
   import "../global.css";
-
-  onMount(async () => {
-    try {
-      // Call the greeting endpoint to test the backend
-      const response = await fetch("/api/greeting");
-      const data = await response.json();
-
-      console.log("Backend greeting response:", data);
-      console.log("Environment:", data.environment);
-      console.log("Platform:", data.platform);
-      console.log("Cloudflare info:", data.cf);
-    } catch (error) {
-      console.error("Failed to fetch greeting:", error);
-    }
-  });
 </script>
 
-<Scene />
+<svelte:head>
+  <title>Singularity — Aparimeya.art</title>
+  <meta
+    name="description"
+    content="Orbit a black hole. Explore gravitational lensing, an incandescent accretion disk, and the curvature of light in an interactive ray-traced simulation."
+  />
+  <meta name="theme-color" content="#030305" />
+</svelte:head>
+<BlackHole />

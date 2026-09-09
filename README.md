@@ -1,64 +1,57 @@
-Live at https://aparimeya-art.csgpxmv65k.workers.dev/
+# Aparimeya.art
 
-# Experimental Ray Tracer
+An interactive black-hole renderer. Orbit the accretion disk, watch light bend around the shadow, and adjust the scene in real time.
 
-An experimental ray tracer built with WebGPU, exploring real-time rendering techniques. Features multiple spheres with different materials, a floor plane, and a gradient skybox. Might make it a package / standalone thing that is helpful to get started with WebGPU but will definitely be using this for my personal website.
+## How it works
 
-<!-- Add screenshot here -->
+The browser traces light paths around a non-rotating Schwarzschild black hole. Rays intersect a procedural disk or escape into a generated star field. Multiple disk intersections create the thin secondary rings. No image textures or external services are needed.
 
-![Ray Tracer Screenshot](./screenshot.png)
+Three.js manages WebGL resources; custom GLSL shaders calculate the light paths, disk emission, glow, and optional ASCII or dither effects. SvelteKit provides the page and controls. Cloudflare Workers serves the application; rendering happens on the viewer’s GPU.
 
-## Controls
+The disk’s colors and turbulence are illustrative, not a plasma simulation. The optional gravity grid is a visual guide. [Rendering details](docs/rendering.md) explain the equations and limits.
 
-### Movement
+## Use it
 
-- **W/A/S/D** - Move forward/left/backward/right
-- **Q/E** - Move down/up
-- **Shift + W/A/S/D/Q/E** - Amplified movement (3x speed)
+Drag to orbit; scroll or pinch to zoom. The three bottom icons open performance measurements, final effects, and appearance settings. With the canvas focused, arrow keys orbit, `+`/`-` zoom, `R` resets, and Space pauses animation.
 
-### Camera Rotation
+**Resolution changes pixel dimensions only.** It defaults to 1× CSS resolution; lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 20%; set it to zero for a smooth disk.
 
-- **Mouse drag** - Pan camera view
-- **Arrow Keys** - Rotate camera (pitch/yaw)
-  - **↑/↓** - Pitch (look up/down)
-  - **←/→** - Yaw (look left/right)
-- **Shift + Arrow Keys** - Amplified rotation (3x speed)
+## Develop
 
-### Camera Reset
+Use Node 24 and a browser supporting WebGL 2 with floating-point color buffers.
 
-- **R** - Reset camera rotation
-
-## Getting Started
-
-To run the ray tracer locally:
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
+```sh
+npm ci
 npm run dev
-
-# Open in browser
-npm run dev -- --open
 ```
 
-## Building
-
-To create a production version:
-
-```bash
-npm run build
-```
-
-Preview the production build:
-
-```bash
+```sh
+npm run check   # TypeScript and Svelte diagnostics
+npm test        # Camera geometry, input bounds, and resolution limits
+npm run build  # Cloudflare Worker and browser assets
 npm run preview
 ```
 
-## Technology Stack
+## Code structure
 
-- **WebGPU** - Modern graphics API for high-performance rendering
-- **SvelteKit** - Web framework for the user interface
-- **TypeScript** - Type-safe development
+- `src/lib/components/`: page lifecycle and controls. Settings go into the simulation; performance measurements come back at a low frequency.
+- `src/lib/black-hole/simulation.ts`: animation, resizing, visibility, and cleanup.
+- `orbit-camera.ts` and `orbit-controls.ts`: camera geometry and input handling, kept separate so geometry can be tested without a browser.
+- `renderer.ts` and `shaders/`: GPU resources and render passes. The renderer owns their allocation and disposal.
+- `model.ts`: defaults, camera presets, units, and resolution bounds.
+
+See [verification](docs/verification.md) for the browser checks. A successful build does not validate shader execution on a GPU.
+
+## Deploy
+
+With Wrangler authenticated to the existing Cloudflare account:
+
+```sh
+npm run deploy
+```
+
+This builds and publishes the `aparimeya-art` Worker configured in `wrangler.jsonc`. GitHub pushes and Cloudflare deployments are separate steps.
+
+## Credits
+
+Inspired by [kavan’s black-hole simulation](https://www.youtube.com/watch?v=8-B6ryuBkCM). Original renderer implementation. Licensed under [AGPL-3.0](LICENSE).

@@ -1,116 +1,52 @@
-
-/* @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap'); */
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
-
-*{
-    font-family: "Geist Mono", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-  }
-  
- .o{
-  opacity: 0.5;  
- }
-
- button{
-  background-color: transparent;
-  border: none;
+:root {
+  color-scheme: dark;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --text: #e9e6e3;
+  --muted: #88858a;
+  --accent: #e9bb8a;
+  --border: #ffffff18;
+  color: var(--text);
+  background: #030305;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
   cursor: pointer;
-  
- }
-
-/* Global Range Slider Styling - Override all browser defaults */
-input[type="range"] {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  width: 100%;
-  height: 4px !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  outline: none !important;
-  border-radius: 2px !important;
-  cursor: pointer !important;
-  border: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  color: transparent !important;
 }
-
-/* Mouse-over effects */
-input[type="range"]:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
+button:disabled {
+  cursor: default;
 }
-
-/* WebKit slider handle (Chrome, Safari, Edge) */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  width: 12px !important;
-  height: 12px !important;
-  background: #ffffff !important;
-  cursor: pointer !important;
-  border-radius: 50% !important;
-  border: none !important;
-  box-shadow: none !important;
-  margin-top: -4px !important;
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
 }
-
-/* Firefox slider handle */
-input[type="range"]::-moz-range-thumb {
-  -moz-appearance: none !important;
-  appearance: none !important;
-  width: 12px !important;
-  height: 12px !important;
-  background: #ffffff !important;
-  cursor: pointer !important;
-  border-radius: 50% !important;
-  border: none !important;
-  box-shadow: none !important;
-  margin-top: -4px !important;
+.quiet {
+  border: 0;
+  background: transparent;
+  color: #a5a1a1;
 }
-
-/* WebKit slider track */
-input[type="range"]::-webkit-slider-track {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) var(--range-progress, 50%), rgba(255, 255, 255, 0.1) var(--range-progress, 50%)) !important;
-  border: none !important;
-  height: 4px !important;
-  border-radius: 2px !important;
-  position: relative !important;
-  z-index: 1 !important;
+.quiet:hover {
+  color: var(--accent);
 }
-
-/* Firefox slider track */
-input[type="range"]::-moz-range-track {
-  -moz-appearance: none !important;
-  appearance: none !important;
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: none !important;
-  height: 4px !important;
-  border-radius: 2px !important;
+.muted {
+  color: var(--muted);
 }
-
-/* Additional Safari overrides */
-input[type="range"]::-webkit-slider-container {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-/* Force override any remaining default track styling */
-input[type="range"]::-webkit-slider-track,
-input[type="range"]::-webkit-slider-runnable-track {
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) var(--range-progress, 50%), rgba(255, 255, 255, 0.1) var(--range-progress, 50%)) !important;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) var(--range-progress, 50%), rgba(255, 255, 255, 0.1) var(--range-progress, 50%)) !important;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) var(--range-progress, 50%), rgba(255, 255, 255, 0.1) var(--range-progress, 50%)) !important;
-  border: none !important;
-  height: 4px !important;
-  border-radius: 2px !important;
-  position: relative !important;
-  z-index: 2 !important;
+::selection {
+  background: #9e664b;
+  color: white;
 }
