@@ -7,9 +7,33 @@
   let titleText: HTMLSpanElement;
   let nameText: HTMLSpanElement;
   let nameScale = 1;
+  let titleCharacters = 0;
+  let nameCharacters = 0;
 
   onMount(() => {
     let mounted = true;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const reducedMotion = matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    function typeLine(
+      text: string,
+      delay: number,
+      reveal: (count: number) => void,
+    ) {
+      if (reducedMotion) {
+        timers.push(setTimeout(() => reveal(text.length), 1000));
+        return;
+      }
+      for (let i = 0; i < text.length; i++) {
+        timers.push(
+          setTimeout(() => reveal(i + 1), delay + i * characterInterval),
+        );
+      }
+    }
+    // Revealed letters stay visible independently of layout and animation repainting.
+    typeLine(title, 2800, (count) => (titleCharacters = count));
+    typeLine(name, 3950, (count) => (nameCharacters = count));
     function matchWidths() {
       if (!mounted) return;
       // Preserve matching widths after the downloaded font replaces the fallback.
@@ -21,6 +45,7 @@
     void document.fonts.load("40px Yigdresil").then(matchWidths, () => {});
     return () => {
       mounted = false;
+      timers.forEach(clearTimeout);
     };
   });
 </script>
@@ -41,7 +66,7 @@
     <span bind:this={titleText} aria-hidden="true">
       {#each [...title] as character, i}<span
           class="character"
-          style:--delay={`${2800 + i * characterInterval}ms`}>{character}</span
+          class:visible={i < titleCharacters}>{character}</span
         >{/each}
     </span>
   </h1>
@@ -49,7 +74,7 @@
     <span bind:this={nameText} aria-hidden="true">
       {#each [...name] as character, i}<span
           class="character"
-          style:--delay={`${3950 + i * characterInterval}ms`}>{character}</span
+          class:visible={i < nameCharacters}>{character}</span
         >{/each}
     </span>
   </p>
@@ -94,19 +119,9 @@
     color: #b9b5c2;
   }
   .character {
-    animation: type-character 1ms step-end var(--delay) both;
+    visibility: hidden;
   }
-  @keyframes type-character {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .character {
-      animation-delay: 1s;
-    }
+  .character.visible {
+    visibility: visible;
   }
 </style>
