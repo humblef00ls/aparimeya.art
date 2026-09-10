@@ -18,6 +18,7 @@
   let motionSupported = false;
 
   let canvas: HTMLCanvasElement;
+  let keyboardNavigation = false;
   let simulation: BlackHoleSimulation | undefined;
   let settings = { ...DEFAULT_SETTINGS };
   let stats: SimulationStats | undefined;
@@ -119,6 +120,7 @@
     simulation?.setView(view);
   }
   function handleKey(event: KeyboardEvent) {
+    keyboardNavigation = true;
     if (event.key === "Escape" && openPanel) {
       (openPanel === "stats" ? statsButton : controlsButton)?.focus();
       openPanel = null;
@@ -132,10 +134,14 @@
   }
 </script>
 
-<svelte:window on:keydown={handleKey} />
+<svelte:window
+  on:keydown={handleKey}
+  on:pointerdown={() => (keyboardNavigation = false)}
+/>
 <main class:ready style:--accent={settings.diskColor}>
   <canvas
     bind:this={canvas}
+    class:keyboard-focus={keyboardNavigation}
     tabindex="0"
     aria-label="Black hole simulation. Drag to orbit, scroll or pinch to zoom. Arrow keys orbit, plus and minus zoom, Space pauses, R resets."
   />
@@ -234,6 +240,10 @@
     width: 100%;
     height: 100%;
     touch-action: none;
+    outline: none;
+  }
+  canvas.keyboard-focus:focus-visible {
+    outline: 2px solid var(--accent);
     outline-offset: -3px;
   }
   .corner {
