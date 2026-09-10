@@ -36,3 +36,7 @@ Additional appearance QA: set disk texture to zero and verify a smooth disk; cha
 - Dragged the canvas and confirmed Auto orbit remained enabled.
 - Opened the shader choices inside settings; only stats and settings buttons remain on the canvas.
 - Changed the disk color to amber and verified matching slider, value, and active-control colors. The panel visibly blurs the scene behind it without a border.
+
+## Final gradient-map filters
+
+Verified in the in-app browser: None initially selected; Aurora applied after Dither, after ASCII, and directly after Original. Pixel and glyph shapes remain intact. The Filters section uses the existing glass panel and palette previews. Type checks and all 12 tests pass; the production build succeeds.

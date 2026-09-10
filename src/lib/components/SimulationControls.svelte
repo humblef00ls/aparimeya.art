@@ -1,4 +1,5 @@
 <script lang="ts">
+  import FilterControls from "./FilterControls.svelte";
   import ShaderControls from "./ShaderControls.svelte";
   import RangeControl from "./RangeControl.svelte";
   import type { SimulationSettings, ViewPreset } from "$lib/black-hole/model";
@@ -211,6 +212,10 @@
   <details>
     <summary>Shaders</summary>
     <ShaderControls bind:settings />
+  </details>
+  <details>
+    <summary>Filters</summary>
+    <FilterControls bind:settings />
   </details>
   <p>Drag to orbit · Scroll or pinch to zoom</p>
 </section>

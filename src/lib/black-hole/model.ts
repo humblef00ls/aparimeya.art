@@ -1,3 +1,5 @@
+import type { FilterPreset } from "./filters";
+
 /** All distances are expressed in Schwarzschild radii (rₛ = 2GM/c² = 1). */
 export const HORIZON_RADIUS = 1;
 export const DISK_INNER_RADIUS = 3;
@@ -25,6 +27,7 @@ export interface SimulationSettings {
   starDensity: number;
   gravityGrid: boolean;
   postEffect: PostEffect;
+  filter: FilterPreset;
   asciiSize: number;
   ditherSize: number;
 }
@@ -48,6 +51,7 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   starDensity: 1.3,
   gravityGrid: false,
   postEffect: "dither",
+  filter: "none",
   asciiSize: 7,
   ditherSize: 8,
 });

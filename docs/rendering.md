@@ -70,3 +70,7 @@ Stars have deterministic variations in size, brightness and color, with rare bri
 The gravity grid is a qualitative surface `y = -2 - 9/(1 + 0.08r²)` below the disk. Straight observer rays intersect it using bounded stepping and bisection. It renders in a separate optional pass. Its contribution is attenuated by disk transmission and excluded for captured rays. It is a visual aid, not a Schwarzschild embedding diagram or part of the geodesic equations.
 
 ASCII averages display-image samples per character cell and draws a procedural 5×7 glyph palette. Dither quantizes display RGB to four levels per channel with a 4×4 Bayer threshold matrix. Both run after bloom, tone mapping and pixel scaling; UI panels are unaffected. Increasing effect size enlarges characters or dither pixels.
+
+### Final filters
+
+After compositing and the optional ASCII/Dither pass, an optional gradient map converts display-space luma to three palette stops. It samples at output pixel centers and does not blur or resample the effect. All palettes start at black so glyph gaps and empty space remain black. None bypasses the pass. A separate intermediate buffer is full-size only when both a shader effect and a filter are active; GPU estimates and cleanup include that buffer.

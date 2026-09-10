@@ -20,6 +20,8 @@ import {
   RING_SAMPLES,
   type SimulationSettings,
 } from "./model";
+import { FILTERS } from "./filters";
+import filterShader from "./shaders/filter.frag.glsl?raw";
 import type { OrbitCamera } from "./orbit-camera";
 import vertexShader from "./shaders/fullscreen.vert.glsl?raw";
 import traceSource from "./shaders/trace.frag.glsl?raw";
@@ -46,6 +48,8 @@ export class BlackHoleRenderer {
   private readonly bloomSource: WebGLRenderTarget;
   private readonly blur: ShaderMaterial;
   private readonly effects: ShaderMaterial;
+  private readonly filter: ShaderMaterial;
+  private readonly filterInput: WebGLRenderTarget;
   private readonly display: WebGLRenderTarget;
   private readonly composite: ShaderMaterial;
   private readonly quad: Mesh;
@@ -96,6 +100,9 @@ export class BlackHoleRenderer {
     this.image.texture.magFilter = NearestFilter;
     this.gridImage = target();
     this.display = target();
+    this.filterInput = target();
+    this.filterInput.texture.minFilter = NearestFilter;
+    this.filterInput.texture.magFilter = NearestFilter;
     this.bloomSource = target();
     this.bloomHorizontal = target();
     this.bloomVertical = target();
@@ -196,6 +203,18 @@ export class BlackHoleRenderer {
         uSize: { value: 8 },
       },
     });
+    this.filter = new ShaderMaterial({
+      vertexShader,
+      fragmentShader: filterShader,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: {
+        uSource: { value: this.filterInput.texture },
+        uShadows: { value: new Color() },
+        uMidtones: { value: new Color() },
+        uHighlights: { value: new Color() },
+      },
+    });
     this.quad = new Mesh(this.geometry, this.trace);
     this.quad.frustumCulled = false;
     this.scene.add(this.quad);
@@ -211,11 +230,16 @@ export class BlackHoleRenderer {
       this.trace.uniforms.uFov.value =
         Math.tan((42 * Math.PI) / 360) * Math.max(1, height / width);
     }
-    // Allocate the optional final-stage buffer only while an effect is enabled.
-    this.display.setSize(
-      settings.postEffect === "none" ? 1 : width,
-      settings.postEffect === "none" ? 1 : height,
+    // Optional stages allocate full-size buffers only when needed.
+    const needsDisplay =
+      settings.postEffect !== "none" || settings.filter !== "none";
+    const needsFilterInput =
+      settings.postEffect !== "none" && settings.filter !== "none";
+    this.filterInput.setSize(
+      needsFilterInput ? width : 1,
+      needsFilterInput ? height : 1,
     );
+    this.display.setSize(needsDisplay ? width : 1, needsDisplay ? height : 1);
     this.gridImage.setSize(
       settings.gravityGrid ? size.width : 1,
       settings.gravityGrid ? size.height : 1,
@@ -275,7 +299,9 @@ export class BlackHoleRenderer {
     }
     this.composite.uniforms.uExposure.value = settings.exposure;
     this.composite.uniforms.uBloomStrength.value = settings.bloom;
-    if (settings.postEffect === "none") this.pass(this.composite, null);
+    const hasFilter = settings.filter !== "none";
+    if (settings.postEffect === "none")
+      this.pass(this.composite, hasFilter ? this.display : null);
     else {
       this.pass(this.composite, this.display);
       this.effects.uniforms.uEffect.value =
@@ -284,7 +310,21 @@ export class BlackHoleRenderer {
         settings.postEffect === "ascii"
           ? settings.asciiSize
           : settings.ditherSize;
-      this.pass(this.effects, null);
+      this.pass(this.effects, hasFilter ? this.filterInput : null);
+    }
+    if (hasFilter) {
+      const colors = FILTERS[settings.filter].colors;
+      // Palettes are authored in display space, matching the preceding composite.
+      ["uShadows", "uMidtones", "uHighlights"].forEach((name, index) => {
+        this.filter.uniforms[name].value
+          .set(colors[index])
+          .convertLinearToSRGB();
+      });
+      this.filter.uniforms.uSource.value =
+        settings.postEffect === "none"
+          ? this.display.texture
+          : this.filterInput.texture;
+      this.pass(this.filter, null);
     }
   }
 
@@ -300,6 +340,7 @@ export class BlackHoleRenderer {
       this.image,
       this.gridImage,
       this.display,
+      this.filterInput,
       this.bloomSource,
       this.bloomHorizontal,
       this.bloomVertical,
@@ -326,6 +367,8 @@ export class BlackHoleRenderer {
     this.grid.dispose();
     this.display.dispose();
     this.effects.dispose();
+    this.filter.dispose();
+    this.filterInput.dispose();
     this.bloomSource.dispose();
     this.prefilter.dispose();
     this.bloomHorizontal.dispose();
