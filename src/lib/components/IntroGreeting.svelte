@@ -95,7 +95,7 @@
     right: 20px;
     text-align: center;
     pointer-events: none;
-    color: var(--text);
+    color: #fff;
     text-shadow: 0 2px 16px #000b;
     font:
       400 min(clamp(42px, 6vw, 60px), calc((100vw - 40px) / 8)) / 1.3 Yigdresil,
@@ -108,6 +108,9 @@
     margin: 0;
     font: inherit;
   }
+  h1 {
+    opacity: 0.8;
+  }
   h1 > span,
   p > span {
     display: inline-block;
@@ -116,7 +119,7 @@
   p {
     margin-top: 10px;
     font-size: calc(1em * var(--name-scale));
-    color: #b9b5c2;
+    opacity: 0.4;
   }
   .character {
     visibility: hidden;

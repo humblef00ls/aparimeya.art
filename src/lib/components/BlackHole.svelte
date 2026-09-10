@@ -304,12 +304,13 @@
     height: 46px;
     min-height: 44px;
     font-size: 13px;
+    background: #ffffff08;
     backdrop-filter: blur(22px) saturate(150%);
     -webkit-backdrop-filter: blur(22px) saturate(150%);
   }
   .toggle:hover,
   .toggle[aria-expanded="true"] {
-    background: #ffffff20;
+    background: #ffffff14;
     color: var(--accent);
   }
   svg {
