@@ -6,6 +6,7 @@
     BlackHoleSimulation,
     SimulationStats,
   } from "$lib/black-hole/simulation";
+  import MotionPrompt from "./MotionPrompt.svelte";
   import PerformanceStats from "./PerformanceStats.svelte";
   import SimulationControls from "./SimulationControls.svelte";
 
@@ -120,7 +121,12 @@
     simulation?.setView(view);
   }
   function handleKey(event: KeyboardEvent) {
-    if (event.key === "Tab" && !event.metaKey && !event.ctrlKey && !event.altKey)
+    if (
+      event.key === "Tab" &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.altKey
+    )
       keyboardNavigation = true;
     if (event.key === "Escape" && openPanel) {
       (openPanel === "stats" ? statsButton : controlsButton)?.focus();
@@ -151,6 +157,15 @@
       <p>{error}</p>
       <button on:click={() => location.reload()}>Restart simulation</button>
     </div>
+  {/if}
+  {#if ready && motionSupported && !error}
+    <MotionPrompt
+      status={motionStatus}
+      visible={openPanel === null}
+      onEnable={() => {
+        void motion?.enable();
+      }}
+    />
   {/if}
   <div class="corner left">
     {#if openPanel === "stats"}
