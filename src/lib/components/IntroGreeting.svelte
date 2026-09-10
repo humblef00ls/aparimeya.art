@@ -3,6 +3,7 @@
 
   const title = "Hello World";
   const name = "I am Aparimeya";
+  const characterInterval = 67.5;
   let titleText: HTMLSpanElement;
   let nameText: HTMLSpanElement;
   let nameScale = 1;
@@ -40,7 +41,7 @@
     <span bind:this={titleText} aria-hidden="true">
       {#each [...title] as character, i}<span
           class="character"
-          style:--delay={`${2800 + i * 90}ms`}>{character}</span
+          style:--delay={`${2800 + i * characterInterval}ms`}>{character}</span
         >{/each}
     </span>
   </h1>
@@ -48,7 +49,7 @@
     <span bind:this={nameText} aria-hidden="true">
       {#each [...name] as character, i}<span
           class="character"
-          style:--delay={`${3950 + i * 45}ms`}>{character}</span
+          style:--delay={`${3950 + i * characterInterval}ms`}>{character}</span
         >{/each}
     </span>
   </p>
@@ -72,7 +73,7 @@
     color: var(--text);
     text-shadow: 0 2px 16px #000b;
     font:
-      400 clamp(28px, 4vw, 40px) / 1.3 Yigdresil,
+      400 min(clamp(56px, 8vw, 80px), calc((100vw - 40px) / 6)) / 1.3 Yigdresil,
       Georgia,
       "Times New Roman",
       serif;
