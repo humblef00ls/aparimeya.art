@@ -3,6 +3,7 @@ import type { OrbitCamera } from "./orbit-camera";
 /** Pointer capture makes drag/release reliable outside the canvas; two pointers pinch. */
 export class OrbitControls {
   private readonly events = new AbortController();
+  private gestureScale: number | undefined;
   private readonly pointers = new Map<number, { x: number; y: number }>();
 
   constructor(
@@ -66,11 +67,46 @@ export class OrbitControls {
         { signal },
       );
     }
-    window.addEventListener("blur", () => this.pointers.clear(), { signal });
+    window.addEventListener(
+      "blur",
+      () => {
+        this.pointers.clear();
+        this.gestureScale = undefined;
+      },
+      { signal },
+    );
+
+    // Safari sends cumulative gesture scales instead of Chromium's Ctrl+wheel pinch.
+    for (const type of ["gesturestart", "gesturechange", "gestureend"]) {
+      canvas.addEventListener(
+        type,
+        (event) => {
+          event.preventDefault();
+          if (type === "gestureend") {
+            this.gestureScale = undefined;
+            return;
+          }
+          const scale = (event as Event & { scale: number }).scale;
+          if (!Number.isFinite(scale) || scale <= 0) return;
+          if (type === "gesturestart") {
+            this.gestureScale = scale;
+            onInteract();
+            return;
+          }
+          if (this.gestureScale === undefined) return;
+          // On touch screens, pointer events already handle the same physical pinch.
+          if (this.pointers.size < 2)
+            camera.zoom(Math.log(this.gestureScale / scale));
+          this.gestureScale = scale;
+        },
+        { passive: false, signal },
+      );
+    }
     canvas.addEventListener(
       "wheel",
       (event) => {
         event.preventDefault();
+        if (this.gestureScale !== undefined || this.pointers.size >= 2) return;
         onInteract();
         const pixels =
           event.deltaY *
@@ -79,7 +115,9 @@ export class OrbitControls {
             : event.deltaMode === 2
               ? canvas.clientHeight
               : 1);
-        camera.zoom(Math.max(-0.3, Math.min(0.3, pixels * 0.001)));
+        // Trackpad pinch deltas are much smaller than ordinary scroll deltas.
+        const sensitivity = event.ctrlKey ? 0.01 : 0.001;
+        camera.zoom(Math.max(-0.3, Math.min(0.3, pixels * sensitivity)));
       },
       { passive: false, signal },
     );
@@ -108,6 +146,7 @@ export class OrbitControls {
 
   dispose() {
     this.events.abort();
+    this.gestureScale = undefined;
     this.pointers.clear();
   }
 }
