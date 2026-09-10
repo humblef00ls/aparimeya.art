@@ -31,14 +31,24 @@
     </label>
   {/each}
 </fieldset>
-{#if settings.postEffect !== "none"}
+{#if settings.postEffect === "ascii"}
   <RangeControl
-    id="effect-size"
-    label={settings.postEffect === "ascii" ? "Character size" : "Pattern scale"}
+    id="ascii-size"
+    label="Character size"
     min={4}
     max={16}
     step={1}
-    bind:value={settings.effectSize}
+    bind:value={settings.asciiSize}
+    format={(value) => `${value.toFixed(0)}`}
+  />
+{:else if settings.postEffect === "dither"}
+  <RangeControl
+    id="dither-size"
+    label="Pattern scale"
+    min={4}
+    max={16}
+    step={1}
+    bind:value={settings.ditherSize}
     format={(value) => `${value.toFixed(0)}`}
   />
 {/if}

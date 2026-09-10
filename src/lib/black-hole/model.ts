@@ -25,7 +25,8 @@ export interface SimulationSettings {
   starDensity: number;
   gravityGrid: boolean;
   postEffect: PostEffect;
-  effectSize: number;
+  asciiSize: number;
+  ditherSize: number;
 }
 
 export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
@@ -37,7 +38,7 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   stars: true,
   paused: false,
   autoOrbit: true,
-  resolution: 0.5,
+  resolution: 0.33,
   diskColor: "#7952e8",
   diskTexture: 1.05,
   diskScale: 1,
@@ -47,7 +48,8 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   starDensity: 1.3,
   gravityGrid: false,
   postEffect: "dither",
-  effectSize: 7,
+  asciiSize: 7,
+  ditherSize: 8,
 });
 
 export interface OrbitState {

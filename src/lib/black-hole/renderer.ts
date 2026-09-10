@@ -280,7 +280,10 @@ export class BlackHoleRenderer {
       this.pass(this.composite, this.display);
       this.effects.uniforms.uEffect.value =
         settings.postEffect === "ascii" ? 1 : 2;
-      this.effects.uniforms.uSize.value = settings.effectSize;
+      this.effects.uniforms.uSize.value =
+        settings.postEffect === "ascii"
+          ? settings.asciiSize
+          : settings.ditherSize;
       this.pass(this.effects, null);
     }
   }
