@@ -18,6 +18,7 @@
   let motion: DeviceOrientationControls | undefined;
   let motionStatus: MotionStatus = "off";
   let motionSupported = false;
+  let mobileMotion = false;
 
   let canvas: HTMLCanvasElement;
   let keyboardNavigation = false;
@@ -91,9 +92,8 @@
           return;
         }
         simulation.update(settings);
-        const { DeviceOrientationControls } = await import(
-          "$lib/black-hole/device-orientation"
-        );
+        const { DeviceOrientationControls, isMobileMotionDevice } =
+          await import("$lib/black-hole/device-orientation");
         if (cancelled) return;
         motion = new DeviceOrientationControls(
           (pose) => simulation?.setMotion(pose),
@@ -102,6 +102,8 @@
           },
         );
         motionSupported = motion.supported;
+        mobileMotion = isMobileMotionDevice();
+        if (motionSupported && mobileMotion) void motion.restore();
       } catch (cause) {
         error =
           cause instanceof Error
@@ -162,7 +164,7 @@
   {#if ready && !error}
     <IntroGreeting />
   {/if}
-  {#if ready && motionSupported && !error}
+  {#if ready && motionSupported && mobileMotion && !error}
     <MotionPrompt
       status={motionStatus}
       visible={openPanel === null}

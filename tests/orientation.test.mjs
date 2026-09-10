@@ -81,3 +81,113 @@ test("disposal during a permission request cannot attach sensor listeners", asyn
     globalThis.window = original;
   }
 });
+
+const accessKey = "aparimeya.motion-access.v1";
+function motionBrowser(t, requestPermission) {
+  const values = new Map();
+  const window = Object.assign(new EventTarget(), {
+    isSecureContext: true,
+    DeviceOrientationEvent: requestPermission ? { requestPermission } : {},
+  });
+  const replacements = {
+    window,
+    document: Object.assign(new EventTarget(), { hidden: false }),
+    screen: { orientation: { angle: 0 } },
+    localStorage: {
+      getItem: (key) => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, value),
+      removeItem: (key) => values.delete(key),
+    },
+  };
+  for (const [key, value] of Object.entries(replacements)) {
+    const original = Object.getOwnPropertyDescriptor(globalThis, key);
+    Object.defineProperty(globalThis, key, {
+      value,
+      configurable: true,
+      writable: true,
+    });
+    t.after(() => {
+      if (original) Object.defineProperty(globalThis, key, original);
+      else delete globalThis[key];
+    });
+  }
+  const statuses = [];
+  const controls = new DeviceOrientationControls(
+    () => {},
+    (status) => statuses.push(status),
+  );
+  t.after(() => controls.dispose());
+  const sample = () =>
+    window.dispatchEvent(
+      Object.assign(new Event("deviceorientation"), {
+        alpha: 0,
+        beta: 30,
+        gamma: 5,
+      }),
+    );
+  return { values, controls, statuses, sample };
+}
+
+test("fresh visits do not request motion permission automatically", async (t) => {
+  const browser = motionBrowser(t, () =>
+    assert.fail("unexpected permission request"),
+  );
+  await browser.controls.restore();
+  assert.deepEqual(browser.statuses, []);
+});
+
+test("successful grants restore motion on the next visit", async (t) => {
+  let requests = 0;
+  const b = motionBrowser(t, async () => {
+    requests++;
+    return "granted";
+  });
+  await b.controls.enable();
+  b.sample();
+  assert.equal(b.values.get(accessKey), "granted");
+  b.controls.dispose();
+  b.statuses.length = 0;
+  await b.controls.restore();
+  b.sample();
+  assert.equal(requests, 2);
+  assert.equal(b.statuses.at(-1), "active");
+  assert.ok(!b.statuses.includes("requesting"));
+});
+
+test("denied access is not remembered across visits", async (t) => {
+  let requests = 0;
+  const b = motionBrowser(t, async () => {
+    requests++;
+    return "denied";
+  });
+  await b.controls.enable();
+  assert.equal(b.statuses.at(-1), "denied");
+  await b.controls.restore();
+  assert.equal(requests, 1);
+  assert.equal(b.values.has(accessKey), false);
+});
+
+test("expired grants return to the prompt and allow an explicit retry", async (t) => {
+  let expired = true;
+  const b = motionBrowser(t, async () => {
+    if (expired)
+      throw new DOMException("User activation required", "NotAllowedError");
+    return "granted";
+  });
+  b.values.set(accessKey, "granted");
+  await b.controls.restore();
+  assert.equal(b.statuses.at(-1), "off");
+  assert.equal(b.values.has(accessKey), false);
+  expired = false;
+  await b.controls.enable();
+  b.sample();
+  assert.equal(b.statuses.at(-1), "active");
+});
+
+test("browsers without a permission API remember access after a sensor reading", async (t) => {
+  const b = motionBrowser(t);
+  await b.controls.enable();
+  assert.equal(b.values.has(accessKey), false);
+  b.sample();
+  assert.equal(b.values.get(accessKey), "granted");
+});

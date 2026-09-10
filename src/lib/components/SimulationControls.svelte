@@ -142,7 +142,8 @@
       <div class="actions">
         <button
           on:click={onMotionToggle}
-          disabled={motionStatus === "requesting"}
+          disabled={motionStatus === "requesting" ||
+            motionStatus === "restoring"}
           aria-pressed={motionEnabled}
           >{motionEnabled
             ? "Disable phone motion"

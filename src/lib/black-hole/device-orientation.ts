@@ -46,6 +46,7 @@ export function relativeMotion(
 
 export type MotionStatus =
   | "off"
+  | "restoring"
   | "requesting"
   | "waiting"
   | "active"
@@ -54,6 +55,23 @@ export type MotionStatus =
 type PermissionEvent = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<"granted" | "denied">;
 };
+
+const MOTION_ACCESS_KEY = "aparimeya.motion-access.v1";
+
+export function isMobileMotionDevice() {
+  return (
+    navigator.maxTouchPoints > 0 && matchMedia("(pointer: coarse)").matches
+  );
+}
+
+function rememberMotionAccess(granted: boolean) {
+  try {
+    if (granted) localStorage.setItem(MOTION_ACCESS_KEY, "granted");
+    else localStorage.removeItem(MOTION_ACCESS_KEY);
+  } catch {
+    /* Storage is optional; explicit activation still works. */
+  }
+}
 
 /** Owns permission and sensor lifetime. Sensor readings stay in this browser. */
 export class DeviceOrientationControls {
@@ -76,31 +94,43 @@ export class DeviceOrientationControls {
     this.onStatus = onStatus;
   }
 
-  async enable() {
+  /** A saved grant is a hint, never a substitute for the browser's permission check. */
+  async restore() {
+    try {
+      if (localStorage.getItem(MOTION_ACCESS_KEY) !== "granted") return;
+    } catch {
+      return;
+    }
+    await this.enable(true);
+  }
+
+  async enable(automatic = false) {
     this.disable();
     if (!this.supported) {
       this.onStatus("unavailable");
       return;
     }
     const generation = this.generation;
-    this.onStatus("requesting");
+    this.onStatus(automatic ? "restoring" : "requesting");
     try {
       const api = window.DeviceOrientationEvent as PermissionEvent;
-      // iOS requires this call directly in the button's user-activation handler.
+      // Existing grants resolve without a gesture. A new grant requires the button click.
       const permission = api.requestPermission
         ? await api.requestPermission()
         : "granted";
       if (generation !== this.generation) return;
       if (permission !== "granted") {
-        this.onStatus("denied");
+        rememberMotionAccess(false);
+        this.onStatus(automatic ? "off" : "denied");
         return;
       }
+      if (api.requestPermission) rememberMotionAccess(true);
       this.events = new AbortController();
       const signal = this.events.signal;
-      this.onStatus("waiting");
+      this.onStatus(automatic ? "restoring" : "waiting");
       this.timeout = setTimeout(() => {
         this.disable();
-        this.onStatus("unavailable");
+        this.onStatus(automatic ? "off" : "unavailable");
       }, 5000);
       window.addEventListener(
         "deviceorientation",
@@ -115,7 +145,10 @@ export class DeviceOrientationControls {
           };
           if (!Object.values(sample).every(Number.isFinite)) return;
           const current = orientationQuaternion(sample);
-          if (!this.reference) this.reference = current.clone();
+          if (!this.reference) {
+            this.reference = current.clone();
+            rememberMotionAccess(true);
+          }
           clearTimeout(this.timeout);
           this.onPose(relativeMotion(this.reference, current));
           this.onStatus("active");
@@ -132,7 +165,8 @@ export class DeviceOrientationControls {
     } catch {
       if (generation === this.generation) {
         this.disable();
-        this.onStatus("denied");
+        rememberMotionAccess(false);
+        this.onStatus(automatic ? "off" : "denied");
       }
     }
   }

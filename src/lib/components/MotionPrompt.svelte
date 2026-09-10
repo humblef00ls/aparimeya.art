@@ -7,8 +7,6 @@
   export let visible = true;
   export let onEnable: () => void;
 
-  const dismissalKey = "aparimeya.motion-prompt.dismissed";
-  let mobile = false;
   let dismissed = false;
   let reducedMotion = false;
   // Enabling elsewhere, or later switching motion off, should not trigger another prompt.
@@ -17,27 +15,15 @@
   $: failed = status === "denied" || status === "unavailable";
 
   onMount(() => {
-    mobile =
-      navigator.maxTouchPoints > 0 && matchMedia("(pointer: coarse)").matches;
     reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    try {
-      dismissed = dismissed || sessionStorage.getItem(dismissalKey) === "1";
-    } catch {
-      /* The prompt also works without browser storage. */
-    }
   });
 
   function dismiss() {
     dismissed = true;
-    try {
-      sessionStorage.setItem(dismissalKey, "1");
-    } catch {
-      /* Optional storage. */
-    }
   }
 </script>
 
-{#if mobile && visible && !dismissed}
+{#if visible && !dismissed && status !== "restoring"}
   <aside
     class="motion-prompt"
     aria-label="Phone motion"
@@ -78,10 +64,9 @@
 <style>
   .motion-prompt {
     position: fixed;
-    bottom: calc(84px + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(360px, calc(100vw - 32px));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    left: max(20px, env(safe-area-inset-left));
+    right: max(20px, env(safe-area-inset-right));
     padding: 20px;
     border: 0;
     border-radius: 14px;
@@ -108,6 +93,8 @@
     margin-top: 16px;
   }
   button {
+    flex: 1;
+    min-width: 0;
     border: 0;
     border-radius: 8px;
     min-height: 44px;
