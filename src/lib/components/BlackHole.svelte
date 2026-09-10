@@ -120,7 +120,8 @@
     simulation?.setView(view);
   }
   function handleKey(event: KeyboardEvent) {
-    keyboardNavigation = true;
+    if (event.key === "Tab" && !event.metaKey && !event.ctrlKey && !event.altKey)
+      keyboardNavigation = true;
     if (event.key === "Escape" && openPanel) {
       (openPanel === "stats" ? statsButton : controlsButton)?.focus();
       openPanel = null;
