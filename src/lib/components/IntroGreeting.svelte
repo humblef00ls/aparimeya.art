@@ -8,12 +8,31 @@
   let nameScale = 1;
 
   onMount(() => {
-    // Match the actual serif text widths rather than assuming equal-width glyphs.
-    nameScale =
-      titleText.getBoundingClientRect().width /
-      nameText.getBoundingClientRect().width;
+    let mounted = true;
+    function matchWidths() {
+      if (!mounted) return;
+      // Preserve matching widths after the downloaded font replaces the fallback.
+      nameScale *=
+        titleText.getBoundingClientRect().width /
+        nameText.getBoundingClientRect().width;
+    }
+    matchWidths();
+    void document.fonts.load("40px Makcasa").then(matchWidths, () => {});
+    return () => {
+      mounted = false;
+    };
   });
 </script>
+
+<svelte:head>
+  <link
+    rel="preload"
+    href="/fonts/makcasa-regular.ttf"
+    as="font"
+    type="font/ttf"
+    crossorigin="anonymous"
+  />
+</svelte:head>
 
 <!-- Mounted with the first rendered frame: 1.8 s entrance + 1 s pause. -->
 <header class="greeting" style:--name-scale={nameScale}>
@@ -29,13 +48,20 @@
     <span bind:this={nameText} aria-hidden="true">
       {#each [...name] as character, i}<span
           class="character"
-          style:--delay={`${3950 + i * 90}ms`}>{character}</span
+          style:--delay={`${3950 + i * 45}ms`}>{character}</span
         >{/each}
     </span>
   </p>
 </header>
 
 <style>
+  @font-face {
+    font-family: Makcasa;
+    src: url("/fonts/makcasa-regular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
   .greeting {
     position: absolute;
     top: max(36px, calc(6vh + env(safe-area-inset-top)));
@@ -46,7 +72,8 @@
     color: var(--text);
     text-shadow: 0 2px 16px #000b;
     font:
-      400 clamp(28px, 4vw, 40px) / 1.3 Georgia,
+      400 clamp(28px, 4vw, 40px) / 1.3 Makcasa,
+      Georgia,
       "Times New Roman",
       serif;
   }
