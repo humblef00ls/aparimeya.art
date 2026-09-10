@@ -6,6 +6,7 @@
     BlackHoleSimulation,
     SimulationStats,
   } from "$lib/black-hole/simulation";
+  import IntroGreeting from "./IntroGreeting.svelte";
   import MotionPrompt from "./MotionPrompt.svelte";
   import PerformanceStats from "./PerformanceStats.svelte";
   import SimulationControls from "./SimulationControls.svelte";
@@ -157,6 +158,9 @@
       <p>{error}</p>
       <button on:click={() => location.reload()}>Restart simulation</button>
     </div>
+  {/if}
+  {#if ready && !error}
+    <IntroGreeting />
   {/if}
   {#if ready && motionSupported && !error}
     <MotionPrompt
