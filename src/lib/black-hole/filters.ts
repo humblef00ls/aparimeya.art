@@ -83,3 +83,29 @@ export function gradientStops(
     ? custom
     : FILTERS[preset].colors.map((color, i) => ({ color, position: i / 2 }));
 }
+
+/** Move a color through its neighbors and return its new selection index. */
+export function moveGradientStop(
+  stops: readonly GradientStop[],
+  index: number,
+  position: number,
+) {
+  if (!Number.isFinite(position)) return { stops, selected: index };
+  position = Math.max(0, Math.min(1, position));
+  const others = stops.filter((_, i) => i !== index);
+  // Keep coincident handles distinguishable and saved positions unambiguous.
+  const direction = position < stops[index].position ? -1 : 1;
+  const requested = position;
+  for (
+    let offset = 1;
+    others.some((stop) => Math.abs(stop.position - position) < 0.000001);
+    offset++
+  ) {
+    const next = requested + direction * offset * 0.000002;
+    position =
+      next < 0 || next > 1 ? requested - direction * offset * 0.000002 : next;
+  }
+  const moved = { ...stops[index], position };
+  const sorted = [...others, moved].sort((a, b) => a.position - b.position);
+  return { stops: sorted, selected: sorted.indexOf(moved) };
+}

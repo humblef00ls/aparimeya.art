@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     MAX_GRADIENT_STOPS,
+    moveGradientStop,
     type GradientStop,
   } from "$lib/black-hole/filters";
   export let stops: readonly GradientStop[];
@@ -19,11 +20,10 @@
     );
   }
   function move(position: number) {
-    if (!Number.isFinite(position)) return;
-    const min = selected ? stops[selected - 1].position + 0.0001 : 0;
-    const max =
-      selected < stops.length - 1 ? stops[selected + 1].position - 0.0001 : 1;
-    update({ position: Math.max(min, Math.min(max, position)) });
+    const result = moveGradientStop(stops, selected, position);
+    stops = result.stops;
+    selected = result.selected;
+    if (drag) drag.index = selected;
   }
   function positionAt(x: number) {
     const bounds = track.getBoundingClientRect();
