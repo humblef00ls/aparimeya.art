@@ -25,7 +25,12 @@ export class OrbitCamera {
   private motionTarget: MotionPose = { yaw: 0, pitch: 0, roll: 0 };
   private readonly worldUp = new Vector3(0, 1, 0);
 
-  constructor() {
+  private entranceTime = 0;
+
+  private readonly entranceDuration: number;
+
+  constructor(entranceDuration = 0) {
+    this.entranceDuration = entranceDuration;
     this.update(0);
   }
 
@@ -70,10 +75,17 @@ export class OrbitCamera {
       this.motion[key] +=
         Math.atan2(Math.sin(difference), Math.cos(difference)) * blend;
     }
-    const distance = this.state.distance;
+    this.entranceTime += delta;
+    const progress =
+      this.entranceDuration > 0
+        ? Math.min(1, this.entranceTime / this.entranceDuration)
+        : 1;
+    // Smoothstep settles with zero velocity; the normal orbit target stays unchanged.
+    const entrance = 1 - progress * progress * (3 - 2 * progress);
+    const distance = this.state.distance * (1 + 0.18 * entrance);
     const azimuth = this.state.azimuth + this.motion.yaw;
     const elevation = clamp(
-      this.state.elevation + this.motion.pitch,
+      this.state.elevation + this.motion.pitch + 0.06 * entrance,
       -1.45,
       1.45,
     );

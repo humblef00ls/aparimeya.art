@@ -14,7 +14,8 @@ export interface SimulationStats {
 
 /** Coordinates time, input and rendering; exposes a small API to the UI. */
 export class BlackHoleSimulation {
-  private readonly camera = new OrbitCamera();
+  private readonly camera: OrbitCamera;
+  private firstFrame = true;
   private readonly renderer: BlackHoleRenderer;
   private readonly controls: OrbitControls;
   private readonly resizeObserver: ResizeObserver;
@@ -38,7 +39,10 @@ export class BlackHoleSimulation {
     private readonly onStats: (stats: SimulationStats) => void,
     private readonly onError: (message: string) => void,
     onInteract: () => void,
+    private readonly onReady: () => void,
+    animateEntrance = true,
   ) {
+    this.camera = new OrbitCamera(animateEntrance ? 1.8 : 0);
     this.settings = { ...settings };
     this.renderer = new BlackHoleRenderer(canvas, this.camera);
     this.controls = new OrbitControls(canvas, this.camera, onInteract);
@@ -113,6 +117,10 @@ export class BlackHoleSimulation {
     const cpuStart = performance.now();
     try {
       this.renderer.render(this.simulationTime, this.settings);
+      if (this.firstFrame) {
+        this.firstFrame = false;
+        this.onReady();
+      }
     } catch (error) {
       this.failed = true;
       this.onError(

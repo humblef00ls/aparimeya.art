@@ -12,7 +12,7 @@ The disk’s colors and turbulence are illustrative, not a plasma simulation. Th
 
 ## Use it
 
-Drag to orbit; scroll or pinch to zoom. The two bottom icons open performance measurements and settings, including final shader effects. With the canvas focused, arrow keys orbit, `+`/`-` zoom, `R` resets, and Space pauses animation.
+The scene fades in from its first rendered frame while the camera gently settles over 1.8 seconds. Reduced-motion preferences skip the entrance. Drag to orbit; scroll or pinch to zoom. The two bottom icons open performance measurements and settings, including final shader effects. With the canvas focused, arrow keys orbit, `+`/`-` zoom, `R` resets, and Space pauses animation.
 
 **Resolution changes pixel dimensions only.** It defaults to 0.33× CSS resolution with dither (Dither scale 8, ASCII scale 7); lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 40%, with subtle flowing knots and shaded spiral ridges; set it to zero for a smooth disk.
 
@@ -55,7 +55,7 @@ With Wrangler authenticated to the existing Cloudflare account:
 npm run deploy
 ```
 
-This builds and publishes the `aparimeya-art` Worker configured in `wrangler.jsonc`, including its `aparimeya.art` and `www.aparimeya.art` custom domains. Cloudflare manages DNS and HTTPS; the domain remains registered at Namecheap. GitHub pushes and Cloudflare deployments are separate steps.
+This builds and publishes the `aparimeya-art` Worker configured in `wrangler.jsonc`, including its `aparimeya.art` and `www.aparimeya.art` custom domains. Cloudflare manages DNS and HTTPS; the domain remains registered at Namecheap. Cloudflare Workers Builds deploys pushes to `main`; the command above also supports manual deployment. Keep the lockfile complete across platforms so Cloudflare’s clean install can succeed.
 
 ## Credits
 

@@ -62,14 +62,15 @@
           "$lib/black-hole/simulation"
         );
         if (cancelled) return;
-        if (matchMedia("(prefers-reduced-motion: reduce)").matches)
-          settings.paused = true;
+        const reducedMotion = matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        if (reducedMotion) settings.paused = true;
         simulation = new BlackHoleSimulation(
           canvas,
           settings,
           (value) => {
             stats = value;
-            ready = true;
           },
           (message) => {
             error = message;
@@ -77,6 +78,10 @@
           () => {
             selectedView = null;
           },
+          () => {
+            ready = true;
+          },
+          !reducedMotion,
         );
         const { DeviceOrientationControls } = await import(
           "$lib/black-hole/device-orientation"
@@ -123,7 +128,7 @@
 </script>
 
 <svelte:window on:keydown={handleKey} />
-<main style:--accent={settings.diskColor}>
+<main class:ready style:--accent={settings.diskColor}>
   <canvas
     bind:this={canvas}
     tabindex="0"
@@ -134,8 +139,6 @@
       <p>{error}</p>
       <button on:click={() => location.reload()}>Restart simulation</button>
     </div>
-  {:else if !ready}
-    <p class="status" role="status">Starting simulation…</p>
   {/if}
   <div class="corner left">
     {#if openPanel === "stats"}
@@ -205,6 +208,21 @@
     position: fixed;
     inset: 0;
     background: #030305;
+  }
+  canvas,
+  .corner {
+    opacity: 0;
+    transition: opacity 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ready canvas,
+  .ready .corner {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    canvas,
+    .corner {
+      transition: none;
+    }
   }
   canvas {
     display: block;

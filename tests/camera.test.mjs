@@ -39,3 +39,16 @@ test("reset returns to the original view even after many revolutions", () => {
   camera.update(10);
   assert.ok(camera.position.distanceTo(initial) < 1e-10);
 });
+
+test("entrance starts above and farther away, then settles without changing the orbit", () => {
+  const normal = new OrbitCamera();
+  const entrance = new OrbitCamera(1.8);
+  assert.ok(entrance.position.length() > normal.position.length());
+  assert.ok(entrance.position.y / entrance.position.length() > normal.position.y / normal.position.length());
+  for (let i = 0; i < 120; i++) entrance.update(1 / 60);
+  assert.ok(entrance.position.distanceTo(normal.position) < 1e-10);
+  const slow = new OrbitCamera(1.8), fast = new OrbitCamera(1.8);
+  for (let i = 0; i < 27; i++) slow.update(1 / 30);
+  for (let i = 0; i < 108; i++) fast.update(1 / 120);
+  assert.ok(slow.position.distanceTo(fast.position) < 1e-10);
+});
