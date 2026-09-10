@@ -1,7 +1,38 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  const title = "Hello World";
+  const name = "I am Aparimeya";
+  let titleText: HTMLSpanElement;
+  let nameText: HTMLSpanElement;
+  let nameScale = 1;
+
+  onMount(() => {
+    // Match the actual serif text widths rather than assuming equal-width glyphs.
+    nameScale =
+      titleText.getBoundingClientRect().width /
+      nameText.getBoundingClientRect().width;
+  });
+</script>
+
 <!-- Mounted with the first rendered frame: 1.8 s entrance + 1 s pause. -->
-<header class="greeting">
-  <h1><span>Hello World</span></h1>
-  <p>I am Aparimeya</p>
+<header class="greeting" style:--name-scale={nameScale}>
+  <h1 aria-label={title}>
+    <span bind:this={titleText} aria-hidden="true">
+      {#each [...title] as character, i}<span
+          class="character"
+          style:--delay={`${2800 + i * 90}ms`}>{character}</span
+        >{/each}
+    </span>
+  </h1>
+  <p aria-label={name}>
+    <span bind:this={nameText} aria-hidden="true">
+      {#each [...name] as character, i}<span
+          class="character"
+          style:--delay={`${3950 + i * 90}ms`}>{character}</span
+        >{/each}
+    </span>
+  </p>
 </header>
 
 <style>
@@ -14,51 +45,30 @@
     pointer-events: none;
     color: var(--text);
     text-shadow: 0 2px 16px #000b;
+    font:
+      400 clamp(28px, 4vw, 40px) / 1.3 Georgia,
+      "Times New Roman",
+      serif;
   }
-  h1 {
-    display: inline-block;
-    width: 11ch;
-    text-align: left;
+  h1,
+  p {
     margin: 0;
-    font: 400 clamp(24px, 4vw, 36px) / 1.3 var(--mono);
+    font: inherit;
   }
-  h1 span {
+  h1 > span,
+  p > span {
     display: inline-block;
-    box-sizing: content-box;
-    width: 11ch;
-    overflow: hidden;
-    white-space: nowrap;
-    vertical-align: top;
-    border-right: 1px solid transparent;
-    animation:
-      typewriter 990ms steps(11, end) 2.8s both,
-      cursor 550ms step-end 2.8s 3;
+    white-space: pre;
   }
   p {
-    margin: 12px 0 0;
-    font-size: clamp(13px, 2vw, 15px);
+    margin-top: 10px;
+    font-size: calc(1em * var(--name-scale));
     color: #b9b5c2;
-    animation: reveal 450ms ease-out 3.95s both;
   }
-  @keyframes typewriter {
-    from {
-      width: 0;
-    }
-    to {
-      width: 11ch;
-    }
+  .character {
+    animation: type-character 1ms step-end var(--delay) both;
   }
-  @keyframes cursor {
-    0%,
-    50% {
-      border-right-color: var(--accent);
-    }
-    51%,
-    100% {
-      border-right-color: transparent;
-    }
-  }
-  @keyframes reveal {
+  @keyframes type-character {
     from {
       opacity: 0;
     }
@@ -67,9 +77,8 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    h1 span,
-    p {
-      animation: reveal 1ms step-end 1s both;
+    .character {
+      animation-delay: 1s;
     }
   }
 </style>
