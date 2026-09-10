@@ -98,7 +98,7 @@
     color: var(--text);
     text-shadow: 0 2px 16px #000b;
     font:
-      400 min(clamp(56px, 8vw, 80px), calc((100vw - 40px) / 6)) / 1.3 Yigdresil,
+      400 min(clamp(42px, 6vw, 60px), calc((100vw - 40px) / 8)) / 1.3 Yigdresil,
       Georgia,
       "Times New Roman",
       serif;
