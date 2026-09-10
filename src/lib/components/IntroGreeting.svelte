@@ -17,7 +17,7 @@
         nameText.getBoundingClientRect().width;
     }
     matchWidths();
-    void document.fonts.load("40px Makcasa").then(matchWidths, () => {});
+    void document.fonts.load("40px Yigdresil").then(matchWidths, () => {});
     return () => {
       mounted = false;
     };
@@ -27,9 +27,9 @@
 <svelte:head>
   <link
     rel="preload"
-    href="/fonts/makcasa-regular.ttf"
+    href="/fonts/yigdresil.woff2"
     as="font"
-    type="font/ttf"
+    type="font/woff2"
     crossorigin="anonymous"
   />
 </svelte:head>
@@ -56,10 +56,10 @@
 
 <style>
   @font-face {
-    font-family: Makcasa;
-    src: url("/fonts/makcasa-regular.ttf") format("truetype");
-    font-style: normal;
+    font-family: Yigdresil;
+    src: url("/fonts/yigdresil.woff2") format("woff2");
     font-weight: 400;
+    font-style: normal;
     font-display: swap;
   }
   .greeting {
@@ -72,7 +72,7 @@
     color: var(--text);
     text-shadow: 0 2px 16px #000b;
     font:
-      400 clamp(28px, 4vw, 40px) / 1.3 Makcasa,
+      400 clamp(28px, 4vw, 40px) / 1.3 Yigdresil,
       Georgia,
       "Times New Roman",
       serif;
