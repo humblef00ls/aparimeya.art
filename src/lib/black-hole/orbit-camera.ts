@@ -82,7 +82,7 @@ export class OrbitCamera {
         : 1;
     // Smoothstep settles with zero velocity; the normal orbit target stays unchanged.
     const entrance = 1 - progress * progress * (3 - 2 * progress);
-    const distance = this.state.distance * (1 + 0.24 * entrance);
+    const distance = this.state.distance * (1 + 0.34 * entrance);
     const azimuth = this.state.azimuth + this.motion.yaw;
     const elevation = clamp(
       this.state.elevation + this.motion.pitch + 0.09 * entrance,
