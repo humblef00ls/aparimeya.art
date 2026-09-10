@@ -2,6 +2,8 @@
 
 An interactive black-hole renderer at [aparimeya.art](https://aparimeya.art). Orbit the accretion disk, watch light bend around the shadow, and adjust the scene in real time.
 
+![A violet, dithered black hole surrounded by stars](static/social-preview.png)
+
 ## How it works
 
 The browser traces light paths around a non-rotating Schwarzschild black hole. Rays intersect a procedural disk or escape into a generated star field. Multiple disk intersections create the thin secondary rings. No image textures or external services are needed.
