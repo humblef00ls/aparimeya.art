@@ -43,7 +43,7 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   autoOrbit: true,
   resolution: 0.33,
   diskColor: "#7952e8",
-  diskTexture: 1.05,
+  diskTexture: 0.6,
   diskScale: 1,
   diskBrightness: 1,
   starSize: 1.55,
