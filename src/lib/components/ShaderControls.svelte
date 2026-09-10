@@ -51,7 +51,7 @@
   }
   legend {
     font-size: 13px;
-    margin-bottom: 16px;
+    margin: 16px 0;
   }
   label {
     display: flex;
@@ -59,7 +59,7 @@
     gap: 12px;
     padding: 12px;
     margin-top: 6px;
-    border: 1px solid transparent;
+    border: 0;
     border-radius: 7px;
     cursor: pointer;
     font-size: 13px;
@@ -67,7 +67,7 @@
   label:hover,
   .active {
     background: #ffffff08;
-    border-color: var(--border);
+    color: var(--accent);
   }
   input {
     accent-color: var(--accent);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ShaderControls from "./ShaderControls.svelte";
   import RangeControl from "./RangeControl.svelte";
   import type { SimulationSettings, ViewPreset } from "$lib/black-hole/model";
   import type { MotionStatus } from "$lib/black-hole/device-orientation";
@@ -207,6 +208,10 @@
       /></label
     >
   </details>
+  <details>
+    <summary>Shaders</summary>
+    <ShaderControls bind:settings />
+  </details>
   <p>Drag to orbit · Scroll or pinch to zoom</p>
 </section>
 
@@ -219,7 +224,7 @@
     margin-top: 5px;
   }
   details {
-    border-bottom: 1px solid var(--border);
+    border: 0;
     padding: 16px 0;
   }
   details:first-child {
@@ -241,7 +246,7 @@
   input[type="color"] {
     width: 46px;
     height: 30px;
-    border: 1px solid var(--border);
+    border: 0;
     border-radius: 5px;
     background: transparent;
     cursor: pointer;
@@ -256,8 +261,10 @@
   select,
   button {
     color: var(--text);
-    background: #232326;
-    border: 1px solid var(--border);
+    background: #ffffff10;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 0;
     border-radius: 5px;
     padding: 8px;
     font-size: 12px;

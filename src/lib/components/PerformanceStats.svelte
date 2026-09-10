@@ -92,7 +92,7 @@
   }
   p {
     margin: 16px 0 0;
-    border-top: 1px solid var(--border);
+    border: 0;
     padding-top: 14px;
     color: var(--muted);
     font-size: 11px;

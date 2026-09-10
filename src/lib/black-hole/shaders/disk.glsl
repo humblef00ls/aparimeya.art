@@ -9,8 +9,20 @@ vec4 diskEmission(vec3 position, vec3 rayDirection, float footprint) {
   float filaments = turbulence(flow * 4.0 + vec2(textureRadius * 7.0, textureRadius * 0.8));
   float bands = 0.5 + 0.5 * sin(textureRadius * 22.0 + filaments * 7.0) * exp(-pow(footprint * uDiskScale * 22.0, 2.0));
   float fineBands = 0.5 + 0.5 * sin(textureRadius * 63.0 + filaments * 4.0) * exp(-pow(footprint * uDiskScale * 63.0, 2.0));
-  float detail = 0.35 + 0.8 * filaments + 0.4 * bands + 0.12 * fineBands;
-  float structure = mix(1.0, detail, uDiskTexture * exp(-footprint * 3.0));
+  // Large advected knots survive low-resolution rendering; fine filaments add detail
+  // at closer views. Integer angular frequencies keep the pattern seamless.
+  float knots = turbulence(flow * 2.4 + vec2(textureRadius * 0.75, textureRadius * 0.18));
+  float spiralPhase = textureRadius * 9.0 - orbitalPhase * 3.0 + knots * 9.0;
+  float spiralFilter = exp(-pow(footprint * uDiskScale * 9.0, 2.0));
+  float ridges = 0.5 + 0.5 * sin(spiralPhase) * spiralFilter;
+  float density = smoothstep(0.2, 0.8, knots);
+  float detail = 0.2 + 1.3 * density + 0.55 * ridges + 0.25 * bands + 0.12 * fineBands;
+  float textureWeight = uDiskTexture * exp(-footprint * 0.6);
+  float structure = max(0.08, mix(1.0, detail, textureWeight));
+  // Shading across the flowing ridges suggests raised, illuminated gas. This is
+  // an emissivity approximation on the disk plane, not a volumetric fluid solver.
+  float relief = mix(1.0, 0.72 + 0.38 * cos(spiralPhase - 0.65) * spiralFilter,
+                     clamp(textureWeight, 0.0, 1.0));
 
   float innerFade = smoothstep(uDiskInner, uDiskInner + 0.5, radius);
   float outerFade = 1.0 - smoothstep(uDiskOuter * 0.68, uDiskOuter, radius);
@@ -23,6 +35,7 @@ vec4 diskEmission(vec3 position, vec3 rayDirection, float footprint) {
   float doppler = sqrt(1.0 - beta * beta) / (1.0 - beta * dot(tangent, -normalize(rayDirection)));
   float shift = mix(1.0, doppler * sqrt(1.0 - 1.0 / radius), uDoppler);
   color *= mix(vec3(1.0), vec3(1.0, clamp(shift, 0.65, 1.3), clamp(shift * shift, 0.45, 1.5)), uDoppler);
-  float intensity = 4.5 * uDiskBrightness * heat * structure * pow(shift, 3.0);
-  return vec4(color * intensity * innerFade * outerFade, innerFade * outerFade * 0.85);
+  color *= mix(vec3(1.0), mix(uDiskColor * 0.55, vec3(1.0), density), clamp(textureWeight * 0.45, 0.0, 0.65));
+  float intensity = 4.5 * uDiskBrightness * heat * structure * relief * pow(shift, 3.0);
+  return vec4(color * intensity * innerFade * outerFade, innerFade * outerFade * mix(0.85, clamp(0.45 + density * 0.6, 0.0, 1.0), clamp(textureWeight, 0.0, 1.0)));
 }

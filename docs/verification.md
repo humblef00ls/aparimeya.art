@@ -29,3 +29,10 @@ Additional appearance QA: set disk texture to zero and verify a smooth disk; cha
 - Verified the extended zoom limit still shows the disk and star field; inward rays from beyond the previous escape radius are no longer discarded.
 - Verified the motion-enable control and the browser's denied-permission message. Physical phone sensors were not available for end-to-end testing.
 - Automated orientation tests cover portrait/landscape calibration, bounded tilt, roll, orthonormal camera vectors, and disposal while permission is pending.
+
+## Flowing disk and glass controls
+
+- Verified stronger disk variation in the default quarter-resolution dither view.
+- Dragged the canvas and confirmed Auto orbit remained enabled.
+- Opened the shader choices inside settings; only stats and settings buttons remain on the canvas.
+- Changed the disk color to amber and verified matching slider, value, and active-control colors. The panel visibly blurs the scene behind it without a border.

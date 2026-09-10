@@ -5,7 +5,6 @@
     BlackHoleSimulation,
     SimulationStats,
   } from "$lib/black-hole/simulation";
-  import ShaderControls from "./ShaderControls.svelte";
   import PerformanceStats from "./PerformanceStats.svelte";
   import SimulationControls from "./SimulationControls.svelte";
 
@@ -21,8 +20,7 @@
   let simulation: BlackHoleSimulation | undefined;
   let settings = { ...DEFAULT_SETTINGS };
   let stats: SimulationStats | undefined;
-  let openPanel: "stats" | "controls" | "shaders" | null = null;
-  let shadersButton: HTMLButtonElement;
+  let openPanel: "stats" | "controls" | null = null;
   let statsButton: HTMLButtonElement;
   let controlsButton: HTMLButtonElement;
   let error = "";
@@ -52,7 +50,6 @@
             error = message;
           },
           () => {
-            settings.autoOrbit = false;
             selectedView = null;
           },
         );
@@ -84,17 +81,11 @@
 
   function setView(view: ViewPreset) {
     selectedView = view;
-    settings.autoOrbit = false;
     simulation?.setView(view);
   }
   function handleKey(event: KeyboardEvent) {
     if (event.key === "Escape" && openPanel) {
-      (openPanel === "stats"
-        ? statsButton
-        : openPanel === "shaders"
-          ? shadersButton
-          : controlsButton
-      )?.focus();
+      (openPanel === "stats" ? statsButton : controlsButton)?.focus();
       openPanel = null;
     }
     if (event.target !== canvas) return;
@@ -107,7 +98,7 @@
 </script>
 
 <svelte:window on:keydown={handleKey} />
-<main>
+<main style:--accent={settings.diskColor}>
   <canvas
     bind:this={canvas}
     tabindex="0"
@@ -142,28 +133,6 @@
     >
       <svg viewBox="0 0 20 20" aria-hidden="true"
         ><path d="M3 16V10M10 16V4M17 16V7" /></svg
-      >
-    </button>
-  </div>
-  <div class="corner center">
-    {#if openPanel === "shaders"}
-      <section id="shaders-panel" class="panel" aria-label="Final shaders">
-        <ShaderControls bind:settings />
-      </section>
-    {/if}
-    <button
-      bind:this={shadersButton}
-      class="toggle"
-      aria-label="Final shaders"
-      title="Final shaders"
-      aria-expanded={openPanel === "shaders"}
-      aria-controls="shaders-panel"
-      on:click={() => (openPanel = openPanel === "shaders" ? null : "shaders")}
-    >
-      <svg viewBox="0 0 20 20" aria-hidden="true"
-        ><path
-          d="M10 2L18 6L10 10L2 6Z M2 10L10 14L18 10 M2 14L10 18L18 14"
-        /></svg
       >
     </button>
   </div>
@@ -231,11 +200,6 @@
     left: max(20px, env(safe-area-inset-left));
     align-items: flex-start;
   }
-  .center {
-    left: 50%;
-    transform: translateX(-50%);
-    align-items: center;
-  }
   .right {
     right: max(20px, env(safe-area-inset-right));
     align-items: flex-end;
@@ -246,8 +210,8 @@
   }
   button {
     color: var(--text);
-    background: #141518e8;
-    border: 1px solid #ffffff26;
+    background: #18192170;
+    border: 0;
     border-radius: 9px;
     padding: 12px 16px;
   }
@@ -260,12 +224,13 @@
     height: 46px;
     min-height: 44px;
     font-size: 13px;
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
   }
   .toggle:hover,
   .toggle[aria-expanded="true"] {
-    background: #28282ce8;
-    border-color: #ffffff45;
+    background: #ffffff20;
+    color: var(--accent);
   }
   svg {
     width: 18px;
@@ -279,11 +244,12 @@
     width: min(310px, calc(100vw - 40px));
     max-height: calc(100dvh - 104px);
     overflow: auto;
-    background: #111216f2;
-    border: 1px solid var(--border);
+    background: #11121b80;
+    border: 0;
     border-radius: 12px;
     padding: 22px;
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
     box-shadow: 0 12px 40px #0006;
   }
   .status {
