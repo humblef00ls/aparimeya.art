@@ -1,3 +1,4 @@
+/// <reference types="@webgpu/types" />
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 

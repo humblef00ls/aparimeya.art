@@ -1,4 +1,4 @@
-import { Euler, Quaternion, Vector3 } from "three";
+import { Quaternion, Vector3 } from "./math.ts";
 import { clamp } from "./model.ts";
 import type { MotionPose } from "./orbit-camera.ts";
 
@@ -13,13 +13,10 @@ export interface OrientationSample {
 export function orientationQuaternion(sample: OrientationSample): Quaternion {
   const radians = Math.PI / 180;
   return new Quaternion()
-    .setFromEuler(
-      new Euler(
-        sample.beta * radians,
-        sample.alpha * radians,
-        -sample.gamma * radians,
-        "YXZ",
-      ),
+    .setFromYXZ(
+      sample.beta * radians,
+      sample.alpha * radians,
+      -sample.gamma * radians,
     )
     .multiply(
       new Quaternion().setFromAxisAngle(new Vector3(1, 0, 0), -Math.PI / 2),

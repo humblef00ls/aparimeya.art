@@ -1,0 +1,139 @@
+<!doctype html><meta charset="utf-8" /><title>Renderer QA</title
+><canvas></canvas>
+<pre>Starting…</pre>
+<script type="module">
+  import { BlackHoleRenderer } from "/src/lib/black-hole/renderer.ts";
+  import { OrbitCamera } from "/src/lib/black-hole/orbit-camera.ts";
+  import { DEFAULT_SETTINGS } from "/src/lib/black-hole/model.ts";
+  const output = document.querySelector("pre"),
+    canvas = document.querySelector("canvas");
+  const phase = new URL(location.href).searchParams.get("phase") || "qa";
+  // Optional local collector accepts PNG/JSON; without it, download links stay on this page.
+  const collector = new URL(location.href).searchParams.get("collector");
+  const send = async (data) => {
+    if (collector)
+      return fetch(collector, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    const link = document.createElement("a");
+    link.download = data.name;
+    link.textContent = "Download " + data.name;
+    link.style.display = "block";
+    link.href =
+      data.image ||
+      URL.createObjectURL(
+        new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }),
+      );
+    document.body.append(link);
+  };
+  const errors = [];
+  window.addEventListener("error", (e) => errors.push(e.message));
+  window.addEventListener("unhandledrejection", (e) =>
+    errors.push(String(e.reason)),
+  );
+  const camera = new OrbitCamera();
+  const renderer = await BlackHoleRenderer.create(canvas, camera, (e) =>
+    errors.push(e),
+  );
+  const idle = () => renderer.waitForIdle();
+  const checks = [];
+  async function capture(name, settings, width = 320, height = 200) {
+    renderer.resize(width, height, settings);
+    renderer.render(3, settings);
+    await idle();
+    await send({
+      name: phase + "-" + name + ".png",
+      image: canvas.toDataURL(),
+    });
+    checks.push({ name, ...renderer.getStats() });
+    output.textContent = "Checked " + checks.length + " configurations";
+  }
+  for (const postEffect of ["none", "ascii", "dither"])
+    for (const filter of [
+      "none",
+      "mono",
+      "amber",
+      "aurora",
+      "cosmic",
+      "custom",
+    ])
+      for (const gravityGrid of [false, true])
+        for (const resolution of [0.25, 0.33, 1.75]) {
+          await capture(
+            [postEffect, filter, gravityGrid, resolution].join("-"),
+            {
+              ...DEFAULT_SETTINGS,
+              postEffect,
+              filter,
+              gravityGrid,
+              resolution,
+            },
+          );
+        }
+  for (const elevation of [-1.45, -0.35, 0, 0.35, 1.45])
+    for (const distance of [13, 45, 110]) {
+      camera.setView("cinematic");
+      camera.update(10);
+      camera.orbit(0.7, elevation - 0.16);
+      camera.zoom(Math.log(distance / 28));
+      camera.update(10);
+      await capture("grid-" + elevation + "-" + distance, {
+        ...DEFAULT_SETTINGS,
+        resolution: 1,
+        gravityGrid: true,
+        postEffect: "none",
+      });
+    }
+  camera.setView("cinematic");
+  camera.update(10);
+  for (const [name, settings] of Object.entries({
+    minimal: {
+      bloom: 0,
+      stars: false,
+      lensing: false,
+      doppler: false,
+      postEffect: "none",
+    },
+    smooth: { diskTexture: 0 },
+    amber: { diskColor: "#e7a552" },
+    nostars: { stars: false },
+    noglow: { bloom: 0 },
+    nolensing: { lensing: false },
+    nodoppler: { doppler: false },
+    glyphMin: { postEffect: "ascii", asciiSize: 3 },
+    glyphMax: { postEffect: "ascii", asciiSize: 24 },
+    ditherMin: { ditherSize: 4 },
+    ditherMax: { ditherSize: 24 },
+    manyStops: {
+      filter: "custom",
+      customGradient: Array.from({ length: 16 }, (_, i) => ({
+        position: i / 15,
+        color: i % 2 ? "#ff8040" : "#204080",
+      })),
+    },
+  }))
+    await capture(name, { ...DEFAULT_SETTINGS, ...settings });
+  for (const [w, h] of [
+    [320, 600],
+    [800, 200],
+    [1, 1],
+    [532, 852],
+  ])
+    await capture(
+      "size-" + w + "-" + h,
+      { ...DEFAULT_SETTINGS, gravityGrid: true },
+      w,
+      h,
+    );
+  renderer.dispose();
+  renderer.dispose();
+  await send({ name: phase + ".json", checks, errors });
+  output.textContent = JSON.stringify(
+    { checked: checks.length, errors },
+    null,
+    2,
+  );
+  document.title = "DONE " + phase;
+</script>

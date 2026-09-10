@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { Quaternion, Vector3 } from "three";
+import { Quaternion, Vector3 } from "../src/lib/black-hole/math.ts";
 import {
   orientationQuaternion,
   relativeMotion,

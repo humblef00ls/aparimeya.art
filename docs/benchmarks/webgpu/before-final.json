@@ -1,0 +1,128 @@
+{
+  "name": "before-final.json",
+  "initializationMs": 6.799999997019768,
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+  "webgpu": true,
+  "cases": [
+    {
+      "run": 1,
+      "name": "default",
+      "fps": 59.99999999999999,
+      "frameMs": 16.666666666666668,
+      "p95Ms": 17.199999999999932,
+      "cpuMs": 0.27583333309739827,
+      "completedFrameMs": 0.09000000009934107,
+      "stats": {
+        "renderWidth": 422,
+        "renderHeight": 237,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 6,
+        "textures": 5,
+        "targetBytes": 13702528
+      }
+    },
+    {
+      "run": 1,
+      "name": "maximum",
+      "fps": 18.181818181818183,
+      "frameMs": 55,
+      "p95Ms": 66.79999999999927,
+      "cpuMs": 0.3133333335320155,
+      "completedFrameMs": 0.1133333332836628,
+      "stats": {
+        "renderWidth": 2240,
+        "renderHeight": 1260,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 8,
+        "textures": 7,
+        "targetBytes": 65433600
+      }
+    },
+    {
+      "run": 2,
+      "name": "default",
+      "fps": 59.99999999999999,
+      "frameMs": 16.666666666666668,
+      "p95Ms": 17.299999999999272,
+      "cpuMs": 0.20166666647419335,
+      "completedFrameMs": 0.016666666666666666,
+      "stats": {
+        "renderWidth": 422,
+        "renderHeight": 237,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 6,
+        "textures": 5,
+        "targetBytes": 13702528
+      }
+    },
+    {
+      "run": 2,
+      "name": "maximum",
+      "fps": 18.366878395959287,
+      "frameMs": 54.44583333333333,
+      "p95Ms": 66.70000000000073,
+      "cpuMs": 0.30166666690881055,
+      "completedFrameMs": 0.07666666669150193,
+      "stats": {
+        "renderWidth": 2240,
+        "renderHeight": 1260,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 8,
+        "textures": 7,
+        "targetBytes": 65433600
+      }
+    },
+    {
+      "run": 3,
+      "name": "default",
+      "fps": 59.98200539838042,
+      "frameMs": 16.671666666666685,
+      "p95Ms": 17.400000000001455,
+      "cpuMs": 0.19916666643694042,
+      "completedFrameMs": 0.016666666666666666,
+      "stats": {
+        "renderWidth": 422,
+        "renderHeight": 237,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 6,
+        "textures": 5,
+        "targetBytes": 13702528
+      }
+    },
+    {
+      "run": 3,
+      "name": "maximum",
+      "fps": 18.848068858278218,
+      "frameMs": 53.05583333333337,
+      "p95Ms": 66.70000000000073,
+      "cpuMs": 0.16666666641831399,
+      "completedFrameMs": 0.036666666716337205,
+      "stats": {
+        "renderWidth": 2240,
+        "renderHeight": 1260,
+        "displayWidth": 1280,
+        "displayHeight": 720,
+        "samples": 2,
+        "maxSamples": 16,
+        "drawCalls": 8,
+        "textures": 7,
+        "targetBytes": 65433600
+      }
+    }
+  ]
+}

@@ -57,7 +57,7 @@
     let cancelled = false;
     async function start() {
       try {
-        // Keep Three.js out of the server route and allow the shell to paint first.
+        // Keep GPU initialization out of the server route and allow the shell to paint first.
         const { BlackHoleSimulation } = await import(
           "$lib/black-hole/simulation"
         );
@@ -66,7 +66,7 @@
           "(prefers-reduced-motion: reduce)",
         ).matches;
         if (reducedMotion) settings.paused = true;
-        simulation = new BlackHoleSimulation(
+        simulation = await BlackHoleSimulation.create(
           canvas,
           settings,
           (value) => {
@@ -83,6 +83,11 @@
           },
           !reducedMotion,
         );
+        if (cancelled) {
+          simulation.dispose();
+          return;
+        }
+        simulation.update(settings);
         const { DeviceOrientationControls } = await import(
           "$lib/black-hole/device-orientation"
         );

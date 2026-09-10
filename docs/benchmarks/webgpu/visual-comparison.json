@@ -1,0 +1,975 @@
+[
+  {
+    "case": "grid-0.35-45",
+    "meanAbsoluteError": 0.0003177083333333333,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-true-0.33",
+    "meanAbsoluteError": 0.001296875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-false-1.75",
+    "meanAbsoluteError": 0.0017343749999999998,
+    "maxChannelError": 68,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-true-0.33",
+    "meanAbsoluteError": 0.000875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-true-0.25",
+    "meanAbsoluteError": 0.02309375,
+    "maxChannelError": 141,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid--0.35-45",
+    "meanAbsoluteError": 0.000203125,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-false-0.25",
+    "meanAbsoluteError": 0.0017083333333333334,
+    "maxChannelError": 38,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-true-0.33",
+    "meanAbsoluteError": 0.015661458333333333,
+    "maxChannelError": 105,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-true-0.25",
+    "meanAbsoluteError": 0.0006666666666666666,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "grid-0.35-110",
+    "meanAbsoluteError": 2.604166666666667e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-0-45",
+    "meanAbsoluteError": 8.854166666666667e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-true-0.25",
+    "meanAbsoluteError": 0.0005,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "minimal",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-false-0.33",
+    "meanAbsoluteError": 0.0017395833333333332,
+    "maxChannelError": 67,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-true-1.75",
+    "meanAbsoluteError": 0.0007708333333333333,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-false-0.25",
+    "meanAbsoluteError": 0.0017083333333333334,
+    "maxChannelError": 35,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-true-1.75",
+    "meanAbsoluteError": 0.000640625,
+    "maxChannelError": 5,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-true-1.75",
+    "meanAbsoluteError": 0.018625,
+    "maxChannelError": 101,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "nostars",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-false-0.25",
+    "meanAbsoluteError": 0.0011510416666666667,
+    "maxChannelError": 63,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "glyphMax",
+    "meanAbsoluteError": 0.035750000000000004,
+    "maxChannelError": 191,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-false-0.33",
+    "meanAbsoluteError": 0.001203125,
+    "maxChannelError": 50,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "nolensing",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-true-0.33",
+    "meanAbsoluteError": 0.010770833333333332,
+    "maxChannelError": 78,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-true-0.25",
+    "meanAbsoluteError": 0.0015000000000000002,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-true-0.33",
+    "meanAbsoluteError": 0.001875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-false-1.75",
+    "meanAbsoluteError": 0.00028125,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid--0.35-110",
+    "meanAbsoluteError": 4.687500000000001e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid--1.45-13",
+    "meanAbsoluteError": 0.0005781250000000001,
+    "maxChannelError": 7,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-true-1.75",
+    "meanAbsoluteError": 0.019557291666666667,
+    "maxChannelError": 98,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-true-0.25",
+    "meanAbsoluteError": 0.015989583333333335,
+    "maxChannelError": 105,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-1.45-13",
+    "meanAbsoluteError": 0.0005364583333333333,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-false-0.25",
+    "meanAbsoluteError": 0.0007916666666666666,
+    "maxChannelError": 47,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "smooth",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-false-1.75",
+    "meanAbsoluteError": 0.0014427083333333334,
+    "maxChannelError": 50,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "size-800-200",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-false-0.25",
+    "meanAbsoluteError": 0.00016666666666666666,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "manyStops",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-aurora-true-1.75",
+    "meanAbsoluteError": 0.012979166666666667,
+    "maxChannelError": 75,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-true-0.25",
+    "meanAbsoluteError": 0.024203125000000002,
+    "maxChannelError": 134,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ditherMax",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-true-0.33",
+    "meanAbsoluteError": 0.016171875,
+    "maxChannelError": 101,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-true-1.75",
+    "meanAbsoluteError": 0.0015833333333333333,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-custom-false-0.25",
+    "meanAbsoluteError": 0.0011875,
+    "maxChannelError": 34,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-cosmic-false-0.33",
+    "meanAbsoluteError": 0.00028125,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "nodoppler",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-false-0.33",
+    "meanAbsoluteError": 0.0019479166666666666,
+    "maxChannelError": 92,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-0.35-13",
+    "meanAbsoluteError": 0.0003854166666666667,
+    "maxChannelError": 2,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-true-0.33",
+    "meanAbsoluteError": 0.00115625,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-false-0.25",
+    "meanAbsoluteError": 0.00115625,
+    "maxChannelError": 46,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "size-1-1",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-false-1.75",
+    "meanAbsoluteError": 0.00026041666666666666,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "noglow",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-true-1.75",
+    "meanAbsoluteError": 0.000921875,
+    "maxChannelError": 4,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "grid--0.35-13",
+    "meanAbsoluteError": 0.00024479166666666665,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-true-0.33",
+    "meanAbsoluteError": 0.001875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-true-0.25",
+    "meanAbsoluteError": 0.0015000000000000002,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "grid--1.45-110",
+    "meanAbsoluteError": 7.8125e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-false-0.33",
+    "meanAbsoluteError": 0.001765625,
+    "maxChannelError": 49,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-true-0.25",
+    "meanAbsoluteError": 0.00025,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-0-13",
+    "meanAbsoluteError": 0.00041145833333333334,
+    "maxChannelError": 2,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-false-1.75",
+    "meanAbsoluteError": 0.00028125,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-false-0.25",
+    "meanAbsoluteError": 0.0014739583333333334,
+    "maxChannelError": 89,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-true-1.75",
+    "meanAbsoluteError": 0.0008229166666666666,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-none-false-1.75",
+    "meanAbsoluteError": 0.0021770833333333334,
+    "maxChannelError": 92,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-false-0.25",
+    "meanAbsoluteError": 0.00016666666666666666,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-amber-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-false-0.33",
+    "meanAbsoluteError": 0.00025,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-true-0.33",
+    "meanAbsoluteError": 0.00159375,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-true-1.75",
+    "meanAbsoluteError": 0.0015833333333333333,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-aurora-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-true-0.25",
+    "meanAbsoluteError": 0.001,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-amber-false-0.25",
+    "meanAbsoluteError": 0.00025,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-false-0.25",
+    "meanAbsoluteError": 0.0011875,
+    "maxChannelError": 34,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-custom-false-0.33",
+    "meanAbsoluteError": 0.00028125,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-false-1.75",
+    "meanAbsoluteError": 0.002140625,
+    "maxChannelError": 50,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-0-110",
+    "meanAbsoluteError": 1.5625e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-false-0.25",
+    "meanAbsoluteError": 0.0003333333333333333,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "size-532-852",
+    "meanAbsoluteError": 0.000750114723428289,
+    "maxChannelError": 85,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "glyphMin",
+    "meanAbsoluteError": 0.196078125,
+    "maxChannelError": 255,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-true-0.25",
+    "meanAbsoluteError": 0.0231875,
+    "maxChannelError": 103,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-true-1.75",
+    "meanAbsoluteError": 0.013999999999999999,
+    "maxChannelError": 104,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-false-1.75",
+    "meanAbsoluteError": 0.0017343749999999998,
+    "maxChannelError": 68,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-true-0.33",
+    "meanAbsoluteError": 0.015661458333333333,
+    "maxChannelError": 105,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-false-1.75",
+    "meanAbsoluteError": 0.00017187500000000002,
+    "maxChannelError": 6,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-false-1.75",
+    "meanAbsoluteError": 0.0014270833333333334,
+    "maxChannelError": 70,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-1.45-110",
+    "meanAbsoluteError": 3.6458333333333336e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-true-0.25",
+    "meanAbsoluteError": 0.02309375,
+    "maxChannelError": 141,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-false-1.75",
+    "meanAbsoluteError": 0.00037500000000000006,
+    "maxChannelError": 4,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "size-320-600",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "grid--1.45-45",
+    "meanAbsoluteError": 0.00029166666666666664,
+    "maxChannelError": 5,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "grid-1.45-45",
+    "meanAbsoluteError": 0.00016145833333333333,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-true-0.33",
+    "meanAbsoluteError": 0.015703125,
+    "maxChannelError": 77,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-false-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "amber",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-false-0.33",
+    "meanAbsoluteError": 0.0003125,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-false-0.25",
+    "meanAbsoluteError": 0.001625,
+    "maxChannelError": 26,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-custom-true-1.75",
+    "meanAbsoluteError": 0.018625,
+    "maxChannelError": 101,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-false-0.33",
+    "meanAbsoluteError": 0.000296875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-false-0.33",
+    "meanAbsoluteError": 0.0012968749999999999,
+    "maxChannelError": 69,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-true-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-true-0.33",
+    "meanAbsoluteError": 0.011583333333333333,
+    "maxChannelError": 108,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-cosmic-true-1.75",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-false-0.33",
+    "meanAbsoluteError": 0.0017395833333333332,
+    "maxChannelError": 67,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ditherMin",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-false-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-mono-false-0.33",
+    "meanAbsoluteError": 0.000421875,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-cosmic-false-0.25",
+    "meanAbsoluteError": 0.0011510416666666667,
+    "maxChannelError": 63,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-true-0.25",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-true-0.25",
+    "meanAbsoluteError": 0.017447916666666667,
+    "maxChannelError": 145,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-amber-false-0.25",
+    "meanAbsoluteError": 0.000859375,
+    "maxChannelError": 65,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "none-none-false-0.25",
+    "meanAbsoluteError": 8.333333333333333e-05,
+    "maxChannelError": 1,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-mono-false-0.33",
+    "meanAbsoluteError": 0.0,
+    "maxChannelError": 0,
+    "identical": true,
+    "nonblack": true
+  },
+  {
+    "case": "none-aurora-false-1.75",
+    "meanAbsoluteError": 0.00019791666666666666,
+    "maxChannelError": 5,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "ascii-mono-true-1.75",
+    "meanAbsoluteError": 0.01875,
+    "maxChannelError": 74,
+    "identical": false,
+    "nonblack": true
+  },
+  {
+    "case": "dither-none-false-0.25",
+    "meanAbsoluteError": 0.0017708333333333335,
+    "maxChannelError": 85,
+    "identical": false,
+    "nonblack": true
+  }
+]

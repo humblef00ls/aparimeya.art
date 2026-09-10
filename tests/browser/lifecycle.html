@@ -1,0 +1,75 @@
+<!doctype html><title>WebGPU lifecycle checks</title><canvas></canvas>
+<pre>Starting…</pre>
+<script type="module">
+  import { BlackHoleRenderer } from "/src/lib/black-hole/renderer.ts";
+  import { OrbitCamera } from "/src/lib/black-hole/orbit-camera.ts";
+  import { DEFAULT_SETTINGS } from "/src/lib/black-hole/model.ts";
+  const output = document.querySelector("pre"),
+    canvas = document.querySelector("canvas"),
+    checks = [],
+    errors = [];
+  window.addEventListener(
+    "unhandledrejection",
+    (e) => (output.textContent = String(e.reason?.stack || e.reason)),
+  );
+  const gpu = navigator.gpu;
+  Object.defineProperty(navigator, "gpu", {
+    value: undefined,
+    configurable: true,
+  });
+  try {
+    await BlackHoleRenderer.create(canvas, new OrbitCamera());
+    throw Error("Missing API was accepted");
+  } catch (e) {
+    if (!e.message.includes("requires WebGPU")) throw e;
+    checks.push("Unavailable API produces an actionable error");
+  }
+  delete navigator.gpu;
+  const renderer = await BlackHoleRenderer.create(
+    canvas,
+    new OrbitCamera(),
+    (message) => errors.push(message),
+  );
+  renderer.resize(1, 1, DEFAULT_SETTINGS);
+  renderer.render(0, DEFAULT_SETTINGS);
+  await renderer.waitForIdle();
+  if (canvas.width !== 1 || canvas.height !== 1)
+    throw Error("Initial 1x1 allocation mismatch");
+  checks.push("Tiny initial viewport renders");
+  renderer.device.destroy();
+  await renderer.device.lost;
+  await new Promise((resolve) => setTimeout(resolve, 50));
+  if (!errors.some((e) => e.includes("interrupted")))
+    throw Error("Device loss not reported");
+  checks.push("Device loss reports restart");
+  renderer.dispose();
+  renderer.dispose();
+  const restored = await BlackHoleRenderer.create(
+    canvas,
+    new OrbitCamera(),
+    (message) => {
+      throw Error(message);
+    },
+  );
+  restored.resize(640, 400, DEFAULT_SETTINGS);
+  restored.render(3, DEFAULT_SETTINGS);
+  await restored.waitForIdle();
+  checks.push("Same canvas recreates a device and renders after loss/disposal");
+  const adapter = await gpu.requestAdapter();
+  const info = adapter.info;
+  output.textContent = JSON.stringify(
+    {
+      checks,
+      adapter: {
+        vendor: info.vendor,
+        architecture: info.architecture,
+        device: info.device,
+        description: info.description,
+      },
+    },
+    null,
+    2,
+  );
+  restored.dispose();
+  document.title = "DONE lifecycle";
+</script>

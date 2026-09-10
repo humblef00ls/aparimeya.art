@@ -34,7 +34,8 @@ Escaping rays sample a procedural cube-projected star field using their final di
 3. Apply a horizontal Gaussian blur with contiguous bilinear samples.
 4. Blur vertically into a separate target.
 5. Composite scene and bloom, apply an ACES-style filmic curve and display gamma, then select discrete source-pixel centers and add static sub-byte dither per source pixel.
-6. If selected, run ASCII or ordered dither on the completed display image. Original bypasses this stage and releases its full-size buffer.
+6. If selected, run ASCII or ordered dither on the completed display image. Original bypasses this stage.
+7. If selected, apply a preset or custom gradient map in display space. None bypasses this stage. Intermediate buffers shrink to 1×1 when unused.
 
 With glow, grid and final effects disabled, only the trace and composite passes execute. The optional gravity grid adds a separate pass and render target; its light is composited using the ray tracer’s transmission mask before final effects.
 
@@ -42,16 +43,16 @@ There is no temporal accumulation or history texture: motion stays responsive an
 
 ## Performance and lifetime
 
-The Resolution slider directly controls a scale from 0.25× to 1.75× per dimension, with 1× at its default midpoint. Pixel count therefore changes quadratically with scale. An 8,388,608-pixel ceiling bounds allocations on very large displays. Ray counts remain constant while resolution changes. Bloom buffers and kernel radius use display dimensions, independent of the Resolution slider, so lowering resolution does not enlarge the glow. Browser CSS dimensions determine camera aspect; internal pixel dimensions never affect the field of view. Portrait views increase vertical field of view to retain horizontal framing. The final composite runs at CSS pixel resolution rather than unrestricted device-pixel ratio.
+The Resolution slider directly controls a scale from 0.25× to 1.75× per dimension, with a 0.33× default. Pixel count therefore changes quadratically with scale. An 8,388,608-pixel ceiling bounds allocations on very large displays. Ray counts remain constant while resolution changes. Bloom buffers and kernel radius use display dimensions, independent of the Resolution slider, so lowering resolution does not enlarge the glow. Browser CSS dimensions determine camera aspect; internal pixel dimensions never affect the field of view. Portrait views increase vertical field of view to retain horizontal framing. The final composite runs at CSS pixel resolution rather than unrestricted device-pixel ratio.
 
-Camera damping uses elapsed time. The simulation clamps unusually large time steps after stalls and stops requesting frames while the page is hidden. Time pause leaves the render loop active so navigation still works. GPU targets are reallocated only on size/resolution changes. All targets, materials, geometry, events, resize observers and animation callbacks are released on teardown. Context loss presents a restart action.
+Camera damping uses elapsed time. The simulation clamps unusually large time steps after stalls and stops requesting frames while the page is hidden. Time pause leaves the render loop active so navigation still works. GPU targets are reallocated only on size/resolution changes. All textures, uniform buffers, the canvas context, device, events, resize observers and animation callbacks are released on teardown. Device loss presents a restart action.
 
 ## Where to make changes
 
 - Camera views, resolution bounds, disk radii: `model.ts`.
-- Ray step policy, horizon/escape criteria: `trace.frag.glsl`.
-- Disk structure, emission and orbital animation: `disk.glsl`.
-- Star density and appearance: `sky.glsl`.
+- Ray step policy, horizon/escape criteria: `trace.wgsl`.
+- Disk structure, emission and orbital animation: `disk.wgsl`.
+- Star density and appearance: `sky.wgsl`.
 - Bloom and tone mapping: corresponding shaders and `renderer.ts`.
 - Controls and labels: the Svelte components in `components/`.
 
@@ -63,16 +64,23 @@ Statistics are sampled over roughly 750 ms. Frame intervals use the animation-fr
 
 ## Appearance and visual guides
 
-Disk color is an sRGB UI value converted to linear RGB by Three.js before emission. Texture strength blends from uniform radial emission to procedural filaments, with texture scale and brightness independent. A path-length footprint estimate based on display dimensions, independent of the Resolution slider, attenuates high-frequency bands at small screen scales; it is not a full geodesic ray-differential solution.
+Disk color is an sRGB UI value converted to linear RGB by `hexColor` before emission. Texture strength blends from uniform radial emission to procedural filaments, with texture scale and brightness independent. A path-length footprint estimate based on display dimensions, independent of the Resolution slider, attenuates high-frequency bands at small screen scales; it is not a full geodesic ray-differential solution.
 
 Stars have deterministic variations in size, brightness and color, with rare bright halos. Neighboring cells contribute to prevent large points from being cut off by cell boundaries. The stars remain illustrative and may stretch strongly under lensing.
 
-The gravity grid is a qualitative surface `y = -2 - 9/(1 + 0.08r²)` below the disk. Straight observer rays intersect it using bounded stepping and bisection. It renders in a separate optional pass. Its contribution is attenuated by disk transmission and excluded for captured rays. It is a visual aid, not a Schwarzschild embedding diagram or part of the geodesic equations.
+The gravity grid is a qualitative surface `y = -2 - 9/(1 + 0.08r²)` below the disk. Straight observer rays intersect its implicit cubic; derivative roots split it into monotone intervals refined by bisection. Every crossing contributes transparent line coverage, so the near wall does not hide the bottom. Bounds follow the well’s enclosing sphere rather than a fixed camera distance. It renders in a separate optional pass. Its contribution is attenuated by disk transmission and excluded for captured rays. It is a visual aid, not a Schwarzschild embedding diagram or part of the geodesic equations.
 
 ASCII averages display-image samples per character cell and draws a procedural 5×7 glyph palette. Dither quantizes display RGB to four levels per channel with a 4×4 Bayer threshold matrix. Both run after bloom, tone mapping and pixel scaling; UI panels are unaffected. Increasing effect size enlarges characters or dither pixels.
 
 ### Final filters
 
-After compositing and the optional ASCII/Dither pass, an optional gradient map converts display-space luma to three palette stops. It samples at output pixel centers and does not blur or resample the effect. All palettes start at black so glyph gaps and empty space remain black. None bypasses the pass. A separate intermediate buffer is full-size only when both a shader effect and a filter are active; GPU estimates and cleanup include that buffer.
+After compositing and the optional ASCII/Dither pass, an optional gradient map converts display-space luma to three preset stops or up to sixteen custom stops. It samples at output pixel centers and does not blur or resample the effect. Presets start at black; custom maps may deliberately recolor empty space. None bypasses the pass. A separate intermediate buffer is full-size only when both a shader effect and a filter are active; GPU estimates and cleanup include that buffer.
 
-The gravity grid solves the well’s implicit cubic along each ray. Derivative roots split it into monotone intervals, refined by bisection. Every crossing contributes transparent line coverage, so the near wall does not hide the bottom. Intersection bounds follow the well’s enclosing sphere rather than a fixed distance from the camera.
+
+## WebGPU resource ownership
+
+The renderer requests a WebGPU adapter and device, configures an opaque sRGB canvas, and compiles all pipeline variants before animation starts. Shader errors include the module and line; unsupported devices and device loss are surfaced to the page. There is no alternate graphics backend.
+
+Each pass draws a fullscreen quad generated from the vertex index. Two triangles retain the original raster layout; there are no mesh, index, depth, or scene-graph allocations. All intermediate textures use `rgba16float`. A shared 432-byte uniform layout contains camera vectors, settings, and gradient stops. Each pass owns a separate buffer so horizontal and vertical blur parameters cannot overwrite one another before submission. Bind groups are reused until a texture view changes; the frame is submitted as one command buffer.
+
+Screen coordinates remain bottom-up for the ray model and character patterns. Texture sampling flips Y for WebGPU’s top-down texture coordinates. Disk emission is linear RGB; tone mapping and gamma happen once in the composite pass. Gradient stops remain display-space RGB. Nearest and linear samplers are chosen per input to retain the original pixel scaling and bloom.

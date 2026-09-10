@@ -1,0 +1,10 @@
+{
+  "before": {
+    "bytes": 639074,
+    "gzipBytes": 172684
+  },
+  "after": {
+    "bytes": 181465,
+    "gzipBytes": 60478
+  }
+}

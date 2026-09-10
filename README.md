@@ -8,7 +8,7 @@ An interactive black-hole renderer at [aparimeya.art](https://aparimeya.art). Or
 
 The browser traces light paths around a non-rotating Schwarzschild black hole. Rays intersect a procedural disk or escape into a generated star field. Multiple disk intersections create the thin secondary rings. No image textures or external services are needed.
 
-Three.js manages WebGL resources; custom GLSL shaders calculate the light paths, disk emission, glow, optional ASCII or dither effects, and a final gradient-map filter. SvelteKit provides the page and controls. Cloudflare Workers serves the application; rendering happens on the viewer’s GPU.
+Direct WebGPU calls manage the GPU resources; WGSL shaders calculate the light paths, disk emission, glow, optional ASCII or dither effects, and a final gradient-map filter. TypeScript coordinates the render passes; SvelteKit provides the page and controls. There are no runtime graphics dependencies or WebGL fallback. Cloudflare Workers serves the application; rendering happens on the viewer’s GPU.
 
 The disk’s colors and turbulence are illustrative, not a plasma simulation. The optional gravity grid is a visual guide. [Rendering details](docs/rendering.md) explain the equations and limits.
 
@@ -24,7 +24,7 @@ Filters map the finished image’s brightness to Mono, Amber, Aurora, or Cosmic 
 
 ## Develop
 
-Use Node 24 and a browser supporting WebGL 2 with floating-point color buffers.
+Use Node 24 and a WebGPU-capable browser on HTTPS or localhost. If WebGPU is unavailable, the page shows an error instead of silently selecting another renderer.
 
 ```sh
 npm ci
@@ -44,10 +44,13 @@ npm run preview
 - `src/lib/black-hole/simulation.ts`: animation, resizing, visibility, and cleanup.
 - `orbit-camera.ts` and `orbit-controls.ts`: camera geometry and input handling, kept separate so geometry can be tested without a browser.
 - `device-orientation.ts`: sensor permission, calibration, and screen-relative camera offsets.
-- `renderer.ts` and `shaders/`: GPU resources and render passes. The renderer owns their allocation and disposal.
+- `renderer.ts`: WebGPU initialization and explicit pass ordering.
+- `gpu/`: render targets, pass bindings, and the shared uniform layout. Each resource has one owner and an explicit cleanup path.
+- `shaders/`: native WGSL for rays, procedural emission, the grid, and post-processing.
+- `math.ts`: the small vector, quaternion, and color operations used by the camera and sensors.
 - `model.ts`: defaults, camera presets, units, and resolution bounds.
 
-See [verification](docs/verification.md) for the browser checks. A successful build does not validate shader execution on a GPU.
+See [verification](docs/verification.md) for the browser checks and [migration benchmarks](docs/webgpu-migration.md) for the measured before/after comparison. A successful build does not validate shader execution on a GPU.
 
 ## Deploy
 

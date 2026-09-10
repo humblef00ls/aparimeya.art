@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Renderer benchmark</title>
+    <style>
+      body {
+        background: #07070a;
+        color: white;
+        font: 14px monospace;
+      }
+      canvas {
+        width: 640px;
+        height: 360px;
+      }
+      pre {
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Renderer benchmark</h1>
+    <canvas width="1280" height="720"></canvas>
+    <pre>Starting…</pre>
+    <script type="module">
+      import { BlackHoleRenderer } from "/src/lib/black-hole/renderer.ts";
+      import { OrbitCamera } from "/src/lib/black-hole/orbit-camera.ts";
+      import { DEFAULT_SETTINGS } from "/src/lib/black-hole/model.ts";
+      const output = document.querySelector("pre"),
+        canvas = document.querySelector("canvas");
+      const phase = new URL(location.href).searchParams.get("phase") || "after";
+      // Optional local collector accepts PNG/JSON; without it, download links stay on this page.
+      const collector = new URL(location.href).searchParams.get("collector");
+      const send = async (data) => {
+        if (collector)
+          return fetch(collector, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+        const link = document.createElement("a");
+        link.download = data.name;
+        link.textContent = "Download " + data.name;
+        link.style.display = "block";
+        link.href =
+          data.image ||
+          URL.createObjectURL(
+            new Blob([JSON.stringify(data, null, 2)], {
+              type: "application/json",
+            }),
+          );
+        document.body.append(link);
+      };
+      window.addEventListener(
+        "error",
+        (e) => (output.textContent += "\nERROR " + e.message),
+      );
+      window.addEventListener(
+        "unhandledrejection",
+        (e) =>
+          (output.textContent += "\nERROR " + (e.reason?.stack || e.reason)),
+      );
+      const camera = new OrbitCamera();
+      const start = performance.now();
+      const renderer = await BlackHoleRenderer.create(
+        canvas,
+        camera,
+        console.error,
+      );
+      const initializationMs = performance.now() - start;
+      const idle = () => renderer.waitForIdle();
+      const frame = () => new Promise(requestAnimationFrame);
+      const maximum = {
+        ...DEFAULT_SETTINGS,
+        resolution: 1.75,
+        bloom: 1.5,
+        diskTexture: 1.5,
+        diskScale: 2,
+        diskBrightness: 2,
+        starSize: 3,
+        starVariation: 1,
+        starDensity: 2,
+        gravityGrid: true,
+        exposure: 2.5,
+        speed: 3,
+        filter: "cosmic",
+      };
+      const cases = [
+        ["default", { ...DEFAULT_SETTINGS }],
+        ["maximum", maximum],
+      ];
+      const report = {
+        name: phase + ".json",
+        initializationMs,
+        userAgent: navigator.userAgent,
+        webgpu: !!navigator.gpu,
+        cases: [],
+      };
+      for (let run = 1; run <= 3; run++)
+        for (const [name, settings] of cases) {
+          renderer.resize(1280, 720, settings);
+          for (let i = 0; i < 30; i++) {
+            renderer.render(i / 60, settings);
+            await idle();
+            await frame();
+          }
+          const frames = [],
+            cpu = [];
+          let last = await frame();
+          for (let i = 0; i < 120; i++) {
+            const begin = performance.now();
+            renderer.render(i / 60, settings);
+            cpu.push(performance.now() - begin);
+            const now = await frame();
+            frames.push(now - last);
+            last = now;
+          }
+          await idle(); // Drain outstanding work between measured cases.
+          const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+          const sorted = [...frames].sort((a, b) => a - b);
+          report.cases.push({
+            run,
+            name,
+            fps: 1000 / mean(frames),
+            frameMs: mean(frames),
+            p95Ms: sorted[Math.floor(sorted.length * 0.95)],
+            cpuMs: mean(cpu),
+            stats: renderer.getStats(),
+          });
+          output.textContent = JSON.stringify(report, null, 2);
+        }
+      const views = [
+        ["default", {}, "cinematic"],
+        ["plain", { postEffect: "none" }, "cinematic"],
+        ["ascii", { postEffect: "ascii" }, "cinematic"],
+        ["grid", { gravityGrid: true, postEffect: "none" }, "overhead"],
+        ["custom", { filter: "custom" }, "cinematic"],
+        ["maximum", maximum, "cinematic"],
+      ];
+      for (const [name, overrides, view] of views) {
+        const settings = { ...DEFAULT_SETTINGS, ...overrides };
+        camera.setView(view);
+        camera.update(10);
+        renderer.resize(640, 400, settings);
+        renderer.render(3, settings);
+        await idle();
+        await send({
+          name: phase + "-" + name + ".png",
+          image: canvas.toDataURL(),
+        });
+      }
+      await send(report);
+      output.textContent = JSON.stringify(report, null, 2);
+      document.title = "DONE " + phase;
+      renderer.dispose();
+    </script>
+  </body>
+</html>

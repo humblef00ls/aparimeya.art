@@ -33,20 +33,27 @@ export class BlackHoleSimulation {
   private disposed = false;
   private failed = false;
 
-  constructor(
+  private constructor(
     canvas: HTMLCanvasElement,
     settings: SimulationSettings,
     private readonly onStats: (stats: SimulationStats) => void,
     private readonly onError: (message: string) => void,
     onInteract: () => void,
     private readonly onReady: () => void,
-    animateEntrance = true,
+    camera: OrbitCamera,
+    renderer: BlackHoleRenderer,
   ) {
-    this.camera = new OrbitCamera(animateEntrance ? 1.8 : 0);
+    this.camera = camera;
     this.settings = { ...settings };
-    this.renderer = new BlackHoleRenderer(canvas, this.camera);
+    this.renderer = renderer;
     this.controls = new OrbitControls(canvas, this.camera, onInteract);
-    this.resizeObserver = new ResizeObserver(() => this.resize(canvas));
+    this.resizeObserver = new ResizeObserver(() => {
+      try {
+        this.resize(canvas);
+      } catch (error) {
+        this.fail(error);
+      }
+    });
     try {
       this.resizeObserver.observe(canvas);
       this.resize(canvas);
@@ -70,24 +77,51 @@ export class BlackHoleSimulation {
       },
       { signal },
     );
-    canvas.addEventListener(
-      "webglcontextlost",
-      (event) => {
-        event.preventDefault();
-        cancelAnimationFrame(this.frame);
-        this.failed = true;
-        onError(
-          "The graphics connection was interrupted. Restart the simulation to reconnect.",
-        );
-      },
-      { signal },
-    );
     this.frame = requestAnimationFrame(this.tick);
+  }
+
+  static async create(
+    canvas: HTMLCanvasElement,
+    settings: SimulationSettings,
+    onStats: (stats: SimulationStats) => void,
+    onError: (message: string) => void,
+    onInteract: () => void,
+    onReady: () => void,
+    animateEntrance = true,
+  ) {
+    const camera = new OrbitCamera(animateEntrance ? 1.8 : 0);
+    let simulation: BlackHoleSimulation | undefined;
+    const renderer = await BlackHoleRenderer.create(
+      canvas,
+      camera,
+      (message) => {
+        if (simulation) {
+          simulation.failed = true;
+          cancelAnimationFrame(simulation.frame);
+        }
+        onError(message);
+      },
+    );
+    simulation = new BlackHoleSimulation(
+      canvas,
+      settings,
+      onStats,
+      onError,
+      onInteract,
+      onReady,
+      camera,
+      renderer,
+    );
+    return simulation;
   }
 
   update(settings: SimulationSettings) {
     this.settings = { ...settings };
-    this.renderer.resize(this.width, this.height, this.settings);
+    try {
+      this.renderer.resize(this.width, this.height, this.settings);
+    } catch (error) {
+      this.fail(error);
+    }
   }
 
   setMotion(pose: MotionPose) {
@@ -102,6 +136,16 @@ export class BlackHoleSimulation {
     this.width = Math.max(1, Math.round(canvas.clientWidth));
     this.height = Math.max(1, Math.round(canvas.clientHeight));
     this.renderer.resize(this.width, this.height, this.settings);
+  }
+
+  private fail(error: unknown) {
+    this.failed = true;
+    cancelAnimationFrame(this.frame);
+    this.onError(
+      error instanceof Error
+        ? error.message
+        : "The simulation could not render.",
+    );
   }
 
   private tick = (now: number) => {
@@ -122,12 +166,7 @@ export class BlackHoleSimulation {
         this.onReady();
       }
     } catch (error) {
-      this.failed = true;
-      this.onError(
-        error instanceof Error
-          ? error.message
-          : "The simulation could not render.",
-      );
+      this.fail(error);
       return;
     }
     if (this.sampleTime) {
