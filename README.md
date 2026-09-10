@@ -14,7 +14,7 @@ The disk’s colors and turbulence are illustrative, not a plasma simulation. Th
 
 Drag to orbit; scroll or pinch to zoom. The two bottom icons open performance measurements and settings, including final shader effects. With the canvas focused, arrow keys orbit, `+`/`-` zoom, `R` resets, and Space pauses animation.
 
-**Resolution changes pixel dimensions only.** It defaults to 0.33× CSS resolution with dither (Dither scale 8, ASCII scale 7); lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 60%, with subtle flowing knots and shaded spiral ridges; set it to zero for a smooth disk.
+**Resolution changes pixel dimensions only.** It defaults to 0.33× CSS resolution with dither (Dither scale 8, ASCII scale 7); lower values produce crisp pixel blocks. Ray sampling, disk detail, and glow radius stay fixed. Disk texture strength defaults to 40%, with subtle flowing knots and shaded spiral ridges; set it to zero for a smooth disk.
 
 The default scene uses a violet-indigo disk, a fuller star field, and slow auto orbit, which continues during touch and zoom until switched off. Zoom extends to 110 Schwarzschild radii. In **Camera & rendering**, enable phone motion to add tilt parallax and roll compensation; recenter in your comfortable holding position. iOS asks for permission. Sensor readings stay on-device; this is orientation-driven depth, not positional tracking.
 
