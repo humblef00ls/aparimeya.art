@@ -25,8 +25,8 @@ test("every camera preset stays in the safe observation volume", () => {
     assert.deepEqual(constrainOrbit(view), view);
 });
 
-test("resolution controls only pixel dimensions, with a quarter-resolution default", () => {
-  assert.equal(DEFAULT_SETTINGS.resolution, 0.25);
+test("resolution controls only pixel dimensions, with a half-resolution default", () => {
+  assert.equal(DEFAULT_SETTINGS.resolution, 0.5);
   assert.deepEqual(renderSize(1280, 720, 1), { width: 1280, height: 720 });
   assert.deepEqual(renderSize(1280, 720, 0.25), { width: 320, height: 180 });
   assert.deepEqual(renderSize(1280, 720, 1.75), { width: 2240, height: 1260 });
