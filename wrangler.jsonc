@@ -9,5 +9,19 @@
   "vars": {
     "NODE_ENV": "production"
   },
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "routes": [
+    {
+      "pattern": "aparimeya.art",
+      "custom_domain": true,
+      "zone_id": "05c6a19ca38d2a2cb5c22bf4cc9918e7"
+    },
+    {
+      "pattern": "www.aparimeya.art",
+      "custom_domain": true,
+      "zone_id": "05c6a19ca38d2a2cb5c22bf4cc9918e7"
+    }
+  ]
 }

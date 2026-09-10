@@ -1,6 +1,6 @@
 # Aparimeya.art
 
-An interactive black-hole renderer. Orbit the accretion disk, watch light bend around the shadow, and adjust the scene in real time.
+An interactive black-hole renderer at [aparimeya.art](https://aparimeya.art). Orbit the accretion disk, watch light bend around the shadow, and adjust the scene in real time.
 
 ## How it works
 
@@ -55,7 +55,7 @@ With Wrangler authenticated to the existing Cloudflare account:
 npm run deploy
 ```
 
-This builds and publishes the `aparimeya-art` Worker configured in `wrangler.jsonc`. GitHub pushes and Cloudflare deployments are separate steps.
+This builds and publishes the `aparimeya-art` Worker configured in `wrangler.jsonc`, including its `aparimeya.art` and `www.aparimeya.art` custom domains. Cloudflare manages DNS and HTTPS; the domain remains registered at Namecheap. GitHub pushes and Cloudflare deployments are separate steps.
 
 ## Credits
 
