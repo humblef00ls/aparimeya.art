@@ -30,7 +30,7 @@ export interface SimulationSettings {
 
 export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   exposure: 1.15,
-  bloom: 0.55,
+  bloom: 0.75,
   speed: 1,
   lensing: true,
   doppler: true,
