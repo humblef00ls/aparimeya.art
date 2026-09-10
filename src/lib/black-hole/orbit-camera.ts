@@ -65,7 +65,7 @@ export class OrbitCamera {
   }
 
   update(delta: number, autoOrbit = false) {
-    if (autoOrbit) this.target.azimuth += delta * 0.055;
+    if (autoOrbit) this.target.azimuth += delta * 0.0495;
     const blend = 1 - Math.exp(-delta * 12);
     for (const key of ["azimuth", "elevation", "distance"] as const) {
       this.state[key] += (this.target[key] - this.state[key]) * blend;
@@ -82,10 +82,10 @@ export class OrbitCamera {
         : 1;
     // Smoothstep settles with zero velocity; the normal orbit target stays unchanged.
     const entrance = 1 - progress * progress * (3 - 2 * progress);
-    const distance = this.state.distance * (1 + 0.18 * entrance);
+    const distance = this.state.distance * (1 + 0.24 * entrance);
     const azimuth = this.state.azimuth + this.motion.yaw;
     const elevation = clamp(
-      this.state.elevation + this.motion.pitch + 0.06 * entrance,
+      this.state.elevation + this.motion.pitch + 0.09 * entrance,
       -1.45,
       1.45,
     );

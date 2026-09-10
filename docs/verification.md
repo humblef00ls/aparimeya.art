@@ -40,3 +40,7 @@ Additional appearance QA: set disk texture to zero and verify a smooth disk; cha
 ## Final gradient-map filters
 
 Verified in the in-app browser: None initially selected; Aurora applied after Dither, after ASCII, and directly after Original. Pixel and glyph shapes remain intact. The Filters section uses the existing glass panel and palette previews. Type checks and all 12 tests pass; the production build succeeds.
+
+## Gravity grid visibility
+
+Verified 27 browser-rendered views: elevations −1.35, −0.35, 0, 0.35, 1.35 radians at distances 13, 45, 110 with full resolution; then elevations ±1.45 and ±0.1 at distances 13, 80, 110 with 0.33× resolution and dither, varying azimuth. Both sides and the bottom remain visible through gaps in the wire grid, including beyond the former 80-unit ray limit. Close views naturally crop the grid; distant views reduce its screen size.

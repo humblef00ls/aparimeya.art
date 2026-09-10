@@ -74,3 +74,5 @@ ASCII averages display-image samples per character cell and draws a procedural 5
 ### Final filters
 
 After compositing and the optional ASCII/Dither pass, an optional gradient map converts display-space luma to three palette stops. It samples at output pixel centers and does not blur or resample the effect. All palettes start at black so glyph gaps and empty space remain black. None bypasses the pass. A separate intermediate buffer is full-size only when both a shader effect and a filter are active; GPU estimates and cleanup include that buffer.
+
+The gravity grid solves the well’s implicit cubic along each ray. Derivative roots split it into monotone intervals, refined by bisection. Every crossing contributes transparent line coverage, so the near wall does not hide the bottom. Intersection bounds follow the well’s enclosing sphere rather than a fixed distance from the camera.
