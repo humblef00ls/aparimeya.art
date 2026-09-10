@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Slider from "./Slider.svelte";
   import { FILTERS, MAX_GRADIENT_STOPS } from "$lib/black-hole/filters";
   import type { SimulationSettings } from "$lib/black-hole/model";
   export let settings: SimulationSettings;
@@ -102,20 +103,18 @@
             >Stop {index + 1}<span>{Math.round(stop.position * 100)}%</span
             ></label
           >
-          <input
+          <Slider
             id={`stop-${index}`}
-            type="range"
-            aria-label={`Stop ${index + 1} position`}
+            label={`Stop ${index + 1} position`}
             min={index === 0
               ? 0
               : settings.customGradient[index - 1].position + 0.001}
             max={index === settings.customGradient.length - 1
               ? 1
               : settings.customGradient[index + 1].position - 0.001}
-            step="0.001"
+            step={0.001}
             value={stop.position}
-            on:input={(event) =>
-              updateStop(index, { position: +event.currentTarget.value })}
+            onChange={(position) => updateStop(index, { position })}
           />
         </div>
         <button
@@ -183,11 +182,6 @@
     margin: 0;
     justify-content: space-between;
     font-size: 11px;
-  }
-  .position input {
-    width: 100%;
-    min-height: 28px;
-    margin: 0;
   }
   button {
     border: 0;

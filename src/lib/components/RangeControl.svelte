@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Slider from "./Slider.svelte";
   export let id: string;
   export let label: string;
   export let value: number;
@@ -10,7 +11,7 @@
 </script>
 
 <label for={id}>{label}<output>{format(value)}</output></label>
-<input {id} type="range" {min} {max} {step} {disabled} bind:value />
+<Slider {id} {min} {max} {step} {disabled} bind:value />
 
 <style>
   label {
@@ -23,16 +24,5 @@
   output {
     font: 11px var(--mono);
     color: var(--accent);
-  }
-  input {
-    width: 100%;
-    height: 20px;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--accent);
-  }
-  input:disabled {
-    opacity: 0.35;
-    cursor: default;
   }
 </style>
