@@ -1,4 +1,8 @@
-import type { FilterPreset } from "./filters";
+import {
+  DEFAULT_GRADIENT,
+  type GradientStop,
+  type FilterPreset,
+} from "./filters.ts";
 
 /** All distances are expressed in Schwarzschild radii (rₛ = 2GM/c² = 1). */
 export const HORIZON_RADIUS = 1;
@@ -28,6 +32,7 @@ export interface SimulationSettings {
   gravityGrid: boolean;
   postEffect: PostEffect;
   filter: FilterPreset;
+  customGradient: readonly GradientStop[];
   asciiSize: number;
   ditherSize: number;
 }
@@ -52,6 +57,7 @@ export const DEFAULT_SETTINGS: Readonly<SimulationSettings> = Object.freeze({
   gravityGrid: false,
   postEffect: "dither",
   filter: "none",
+  customGradient: DEFAULT_GRADIENT,
   asciiSize: 7,
   ditherSize: 8,
 });

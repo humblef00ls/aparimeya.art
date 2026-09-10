@@ -20,7 +20,7 @@ import {
   RING_SAMPLES,
   type SimulationSettings,
 } from "./model";
-import { FILTERS } from "./filters";
+import { gradientStops, MAX_GRADIENT_STOPS } from "./filters";
 import filterShader from "./shaders/filter.frag.glsl?raw";
 import type { OrbitCamera } from "./orbit-camera";
 import vertexShader from "./shaders/fullscreen.vert.glsl?raw";
@@ -210,9 +210,11 @@ export class BlackHoleRenderer {
       depthWrite: false,
       uniforms: {
         uSource: { value: this.filterInput.texture },
-        uShadows: { value: new Color() },
-        uMidtones: { value: new Color() },
-        uHighlights: { value: new Color() },
+        uStopCount: { value: 3 },
+        uPositions: { value: new Float32Array(MAX_GRADIENT_STOPS) },
+        uColors: {
+          value: Array.from({ length: MAX_GRADIENT_STOPS }, () => new Color()),
+        },
       },
     });
     this.quad = new Mesh(this.geometry, this.trace);
@@ -313,11 +315,13 @@ export class BlackHoleRenderer {
       this.pass(this.effects, hasFilter ? this.filterInput : null);
     }
     if (hasFilter) {
-      const colors = FILTERS[settings.filter].colors;
-      // Palettes are authored in display space, matching the preceding composite.
-      ["uShadows", "uMidtones", "uHighlights"].forEach((name, index) => {
-        this.filter.uniforms[name].value
-          .set(colors[index])
+      const stops = gradientStops(settings.filter, settings.customGradient);
+      this.filter.uniforms.uStopCount.value = stops.length;
+      // Colors are authored in display space, matching the preceding composite.
+      stops.forEach((stop, i) => {
+        this.filter.uniforms.uPositions.value[i] = stop.position;
+        this.filter.uniforms.uColors.value[i]
+          .set(stop.color)
           .convertLinearToSRGB();
       });
       this.filter.uniforms.uSource.value =

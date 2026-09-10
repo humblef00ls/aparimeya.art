@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { GRADIENT_STORAGE_KEY, parseGradient } from "$lib/black-hole/filters";
   import { onMount } from "svelte";
   import { DEFAULT_SETTINGS, type ViewPreset } from "$lib/black-hole/model";
   import type {
@@ -25,10 +26,34 @@
   let controlsButton: HTMLButtonElement;
   let error = "";
   let ready = false;
+  let storageReady = false;
+  let savedGradient = "";
+  // Persist only custom stops, independently of the currently selected preset.
+  $: if (storageReady) {
+    const serialized = JSON.stringify(settings.customGradient);
+    if (serialized !== savedGradient) {
+      try {
+        localStorage.setItem(GRADIENT_STORAGE_KEY, serialized);
+      } catch {
+        /* Storage may be disabled. Editing still works. */
+      }
+      savedGradient = serialized;
+    }
+  }
   let selectedView: ViewPreset | null = "cinematic";
   $: simulation?.update(settings);
 
   onMount(() => {
+    try {
+      const gradient = parseGradient(
+        localStorage.getItem(GRADIENT_STORAGE_KEY),
+      );
+      if (gradient) settings.customGradient = gradient;
+    } catch {
+      /* Private or restricted storage falls back to defaults. */
+    }
+    savedGradient = JSON.stringify(settings.customGradient);
+    storageReady = true;
     let cancelled = false;
     async function start() {
       try {

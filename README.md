@@ -18,7 +18,7 @@ Drag to orbit; scroll or pinch to zoom. The two bottom icons open performance me
 
 The default scene uses a violet-indigo disk, a fuller star field, and slow auto orbit, which continues during touch and zoom until switched off. Zoom extends to 110 Schwarzschild radii. In **Camera & rendering**, enable phone motion to add tilt parallax and roll compensation; recenter in your comfortable holding position. iOS asks for permission. Sensor readings stay on-device; this is orientation-driven depth, not positional tracking.
 
-Filters map the finished image’s brightness to Mono, Amber, Aurora, or Cosmic palettes. They run after ASCII/Dither, preserve sharp edges, and default to None (no extra pass).
+Filters map the finished image’s brightness to Mono, Amber, Aurora, or Cosmic palettes. Custom lets you add, position, recolor, and remove up to 16 gradient stops. Custom stops are saved locally in your browser and restored when you return; select Custom to apply them. They run after ASCII/Dither, preserve sharp edges, and default to None (no extra pass).
 
 ## Develop
 
