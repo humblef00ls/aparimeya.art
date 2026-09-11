@@ -3,7 +3,7 @@
 
   const title = "Hello World";
   const name = "I am Aparimeya";
-  const characterInterval = 67.5;
+  const characterInterval = 56.25;
   let titleCharacters = 0;
   let nameCharacters = 0;
 
